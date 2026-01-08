@@ -10,7 +10,8 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "thirdweb": "5.116.1"
+    "@dynamic-labs/sdk-react-core": "^4.0.0",
+    "@dynamic-labs/ethereum": "^4.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",

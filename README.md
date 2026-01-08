@@ -1,11 +1,12 @@
-# Relay API Demo with Thirdweb
+# Relay API Demo with Dynamic
 
-A simple demo application showing how to use Thirdweb's Relay API for gasless transactions with a connect button.
+A simple demo application showing how to use Relay API for cross-chain bridging with Dynamic wallet connection.
 
 ## Features
 
-- 🔌 Wallet connection using Thirdweb ConnectButton
-- ⛽ Gasless transactions via Relay API
+- 🔌 Wallet connection using Dynamic Widget
+- 🌉 Cross-chain bridging via Relay API
+- 📊 Real-time transaction monitoring
 - 🎨 Modern, clean UI
 - ⚡ Built with React and Vite
 
@@ -16,15 +17,22 @@ A simple demo application showing how to use Thirdweb's Relay API for gasless tr
    npm install
    ```
 
-2. **Get your Thirdweb Client ID:**
-   - Go to [Thirdweb Dashboard](https://thirdweb.com/dashboard)
+2. **Get your Dynamic Environment ID:**
+   - Go to [Dynamic Dashboard](https://app.dynamic.xyz)
+   - Sign up or log in to your account
    - Create a new project or use an existing one
-   - Copy your Client ID
+   - Copy your Environment ID from the dashboard
 
-3. **Configure the app:**
+3. **Configure the app (choose one method):**
+   
+   **Method 1: Using Environment Variable (Recommended)**
+   - Copy `.env.example` to `.env`: `cp .env.example .env`
+   - Edit `.env` and add your Dynamic Environment ID
+   - Restart the dev server
+   
+   **Method 2: Direct in Code**
    - Open `src/App.jsx`
-   - Replace `YOUR_THIRDWEB_CLIENT_ID` with your actual Client ID
-   - Optionally change the `activeChain` to your preferred chain
+   - Replace `YOUR_DYNAMIC_ENVIRONMENT_ID` with your actual Environment ID
 
 4. **Run the development server:**
    ```bash
@@ -36,14 +44,15 @@ A simple demo application showing how to use Thirdweb's Relay API for gasless tr
 
 ## How to Use
 
-1. Click the "Connect Wallet" button
-2. Select your wallet provider (MetaMask, WalletConnect, etc.)
-3. Approve the connection
-4. Once connected, click "Send Gasless Transaction" to test the Relay API
+1. Click the "Connect Wallet" button (Dynamic Widget)
+2. Select your wallet provider or sign up with email/social
+3. Once connected, click "1. Get Quote" to get a bridge quote
+4. Click "2. Execute Bridge" to execute the cross-chain transaction
+5. Monitor the transaction status in real-time
 
 ## What is Relay API?
 
-The Relay API allows you to send blockchain transactions without paying gas fees. The gas is sponsored by the relay service, making it easier for users to interact with your dApp.
+Relay API is a multichain payments network that enables cross-chain bridging, swapping, and call execution. You define the Intent (what the user wants), and Relay handles the Execution (how to get there). This demo shows how to bridge ETH from Base to Arbitrum.
 
 ## Project Structure
 
@@ -74,9 +83,9 @@ const transaction = {
 
 ## Learn More
 
-- [Thirdweb Documentation](https://portal.thirdweb.com/)
-- [Relay API Guide](https://portal.thirdweb.com/relay)
-- [Thirdweb React SDK](https://portal.thirdweb.com/react)
+- [Dynamic Documentation](https://www.dynamic.xyz/docs)
+- [Dynamic React SDK](https://www.dynamic.xyz/docs/react-sdk)
+- [Dynamic Quickstart](https://www.dynamic.xyz/docs/introduction/getting-started)
 
 ## Relay Docs
 
