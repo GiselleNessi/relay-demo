@@ -307,6 +307,41 @@ const quoteRequest = {
     return snippets.step1;
 };
 
+function JsonViewer({ title, data, isExpanded, onToggle }) {
+    if (!data) return null;
+
+    return (
+        <div style={{ marginTop: "15px" }}>
+            <button
+                onClick={onToggle}
+                style={{
+                    background: "#0D0C0D",
+                    border: "1px solid #4615C8",
+                    color: "#e0e0e0",
+                    padding: "8px 16px",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontSize: "0.9rem",
+                    fontWeight: 600,
+                    width: "100%",
+                    textAlign: "left",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                }}
+            >
+                <span>{title}</span>
+                <span>{isExpanded ? "▼" : "▶"}</span>
+            </button>
+            {isExpanded && (
+                <div className="code-block api-response" style={{ marginTop: "10px" }}>
+                    <pre><code>{JSON.stringify(data, null, 2)}</code></pre>
+                </div>
+            )}
+        </div>
+    );
+}
+
 function CodeSnippet({ snippetData }) {
     const [activeApproach, setActiveApproach] = useState(0);
 
@@ -358,6 +393,18 @@ function AppContent() {
     const [status, setStatus] = useState(null);
     const [currentStep, setCurrentStep] = useState(1);
     const [activeTab, setActiveTab] = useState("demo");
+    const [jsonData, setJsonData] = useState({
+        quoteRequest: null,
+        quoteResponse: null,
+        transactionData: null,
+        statusData: null
+    });
+    const [expandedJson, setExpandedJson] = useState({
+        quoteRequest: false,
+        quoteResponse: false,
+        transactionData: false,
+        statusData: false
+    });
     const { primaryWallet, user } = useDynamicContext();
 
     // Get wallet address from Dynamic
@@ -429,6 +476,16 @@ function AppContent() {
                 const currentStatus = statusData.status;
                 setStatus(currentStatus);
 
+                // Store status data for UI display
+                setJsonData(prev => ({
+                    ...prev,
+                    statusData: {
+                        ...statusData,
+                        attempt: attempts + 1,
+                        timestamp: new Date().toISOString()
+                    }
+                }));
+
                 console.log(`📊 Status Update:`, {
                     status: currentStatus,
                     attempt: attempts + 1,
@@ -497,6 +554,8 @@ function AppContent() {
         setError(null);
         setRelayResult(null);
         setStatus(null);
+        setJsonData({ quoteRequest: null, quoteResponse: null, transactionData: null, statusData: null });
+        setExpandedJson({ quoteRequest: false, quoteResponse: false, transactionData: false, statusData: false });
         setCurrentStep(2);
 
         try {
@@ -551,6 +610,13 @@ function AppContent() {
                 })) || [],
                 fullResponse: quoteData
             });
+
+            // Store JSON data for UI display
+            setJsonData(prev => ({
+                ...prev,
+                quoteRequest: quoteRequest,
+                quoteResponse: quoteData
+            }));
 
             setRelayResult({
                 message: "✅ Step 2 Complete: Quote Retrieved!",
@@ -713,6 +779,18 @@ function AppContent() {
                         timestamp: new Date().toISOString(),
                         explorerUrl: `https://basescan.org/tx/${hash}`
                     });
+
+                    // Store transaction data for UI display
+                    setJsonData(prev => ({
+                        ...prev,
+                        transactionData: {
+                            txHash: hash,
+                            requestId: requestId,
+                            transactionParams: txParams,
+                            timestamp: new Date().toISOString(),
+                            explorerUrl: `https://basescan.org/tx/${hash}`
+                        }
+                    }));
 
                     setRelayResult(prev => ({
                         ...prev,
@@ -908,6 +986,43 @@ function AppContent() {
                                         </div>
                                     )}
                                 </div>
+                            )}
+
+                            {/* JSON Data Viewers */}
+                            {currentStep >= 2 && jsonData.quoteRequest && (
+                                <JsonViewer
+                                    title="📤 Step 2: Quote Request JSON"
+                                    data={jsonData.quoteRequest}
+                                    isExpanded={expandedJson.quoteRequest}
+                                    onToggle={() => setExpandedJson(prev => ({ ...prev, quoteRequest: !prev.quoteRequest }))}
+                                />
+                            )}
+
+                            {currentStep >= 2 && jsonData.quoteResponse && (
+                                <JsonViewer
+                                    title="📥 Step 2: Quote Response JSON"
+                                    data={jsonData.quoteResponse}
+                                    isExpanded={expandedJson.quoteResponse}
+                                    onToggle={() => setExpandedJson(prev => ({ ...prev, quoteResponse: !prev.quoteResponse }))}
+                                />
+                            )}
+
+                            {currentStep >= 3 && jsonData.transactionData && (
+                                <JsonViewer
+                                    title="💳 Step 3: Transaction Data JSON"
+                                    data={jsonData.transactionData}
+                                    isExpanded={expandedJson.transactionData}
+                                    onToggle={() => setExpandedJson(prev => ({ ...prev, transactionData: !prev.transactionData }))}
+                                />
+                            )}
+
+                            {currentStep >= 4 && jsonData.statusData && (
+                                <JsonViewer
+                                    title="📊 Step 4: Status Response JSON"
+                                    data={jsonData.statusData}
+                                    isExpanded={expandedJson.statusData}
+                                    onToggle={() => setExpandedJson(prev => ({ ...prev, statusData: !prev.statusData }))}
+                                />
                             )}
 
                             {currentStep >= 5 && (
