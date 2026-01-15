@@ -1,14 +1,16 @@
-# Relay API Demo with Dynamic
+# Relay API Sandbox with Dynamic
 
-A simple demo application showing how to use Relay API for cross-chain bridging with Dynamic wallet connection.
+An interactive sandbox application for testing the Relay API, SDK, and exploring code snippets. This sandbox demonstrates cross-chain bridging with Dynamic wallet connection and provides live code examples that follow the Relay API Quickstart documentation.
 
 ## Features
 
-- 🔌 Wallet connection using Dynamic Widget
-- 🌉 Cross-chain bridging via Relay API
-- 📊 Real-time transaction monitoring
-- 🎨 Modern, clean UI
-- ⚡ Built with React and Vite
+- 🎮 **Live Demo**: Test the Relay API and SDK in real-time
+- 💻 **Code Snippets**: View API and SDK code examples with multiple implementation approaches
+- 🔌 **Wallet Connection**: Multiple wallet connection options (Dynamic SDK, Ethers.js)
+- 🌉 **Cross-chain Bridging**: Bridge ETH from Base to Arbitrum via Relay API
+- 📊 **Real-time Monitoring**: Track transaction status with live updates
+- 🎨 **Dark Mode UI**: Modern, clean dark theme interface
+- ⚡ **Built with React and Vite**
 
 ## Setup
 
@@ -44,23 +46,47 @@ A simple demo application showing how to use Relay API for cross-chain bridging 
 
 ## How to Use
 
+### Live Demo Tab
 1. Click the "Connect Wallet" button (Dynamic Widget)
 2. Select your wallet provider or sign up with email/social
-3. Once connected, click "1. Get Quote" to get a bridge quote
-4. Click "2. Execute Bridge" to execute the cross-chain transaction
-5. Monitor the transaction status in real-time
+3. Once connected, click "2. Get Quote" to get a bridge quote
+4. Click "3. Execute Bridge" to execute the cross-chain transaction
+5. Monitor the transaction status in real-time as it progresses through the 5-step flow
+
+### Code Snippets Tab
+- Switch to the "Code Snippets" tab to view implementation examples
+- Code snippets automatically update based on your current step in the demo
+- Use the approach tabs to switch between different implementation methods:
+  - **API (Direct)**: Direct API calls for maximum flexibility
+  - **SDK (Dynamic)**: Using Dynamic SDK for wallet integration
+  - **Direct Wallet (Ethers.js)**: Using Ethers.js directly
+  - **Gas Sponsorship**: Examples with ERC-4337 and EIP-7702 smart accounts
+
+## Code Snippets
+
+The code snippets in this sandbox follow the **5-step flow from the Relay API Quickstart documentation**:
+
+1. **Step 1: Configure** - Wallet connection examples (SDK and direct wallet methods)
+2. **Step 2: Get Quote** - API examples for getting bridge/swap quotes (with and without gas sponsorship)
+3. **Step 3: Execute** - Transaction execution examples using SDK and direct wallet methods
+4. **Step 4: Monitor** - Status polling examples to track transaction progress
+5. **Step 5: Optimize** - Advanced features including gas sponsorship, smart accounts, and app fees
+
+The snippets dynamically update based on your progress through the demo and include real data from your session (wallet addresses, request IDs, API responses) when available. This allows you to see both the code examples and how they map to actual functionality.
 
 ## What is Relay API?
 
-Relay API is a multichain payments network that enables cross-chain bridging, swapping, and call execution. You define the Intent (what the user wants), and Relay handles the Execution (how to get there). This demo shows how to bridge ETH from Base to Arbitrum.
+Relay API is a multichain payments network that enables cross-chain bridging, swapping, and call execution. You define the Intent (what the user wants), and Relay handles the Execution (how to get there). This sandbox demonstrates the complete 5-step flow from the Relay API Quickstart documentation, showing how to bridge ETH from Base to Arbitrum.
 
 ## Project Structure
 
 ```
 relay-api-demo/
+├── public/
+│   └── logo.svg         # Relay API logo
 ├── src/
-│   ├── App.jsx          # Main app component with Relay API demo
-│   ├── App.css          # Styles for the app
+│   ├── App.jsx          # Main sandbox component with Relay API demo
+│   ├── App.css          # Styles for the app (dark mode)
 │   ├── main.jsx         # React entry point
 │   └── index.css        # Global styles
 ├── index.html           # HTML template
@@ -69,15 +95,31 @@ relay-api-demo/
 └── README.md           # This file
 ```
 
+## Console Logs
+
+The sandbox includes comprehensive console logging for testing and debugging:
+- Wallet connection/disconnection events
+- Step transitions and state changes
+- Quote request/response details
+- Transaction execution details with explorer links
+- Status monitoring with attempt tracking
+- Error details with full stack traces
+
+Open your browser's developer console (F12) to see detailed logs in real-time.
+
 ## Customization
 
-To customize the transaction being relayed, modify the `transaction` object in the `handleRelayTransaction` function:
+To customize the bridge transaction, modify the `quoteRequest` object in the `handleGetQuote` function:
 
 ```javascript
-const transaction = {
-  to: "0x...",      // Recipient address
-  data: "0x",       // Transaction data (ABI-encoded)
-  value: "0",       // Amount in wei
+const quoteRequest = {
+  user: accountAddress,
+  originChainId: 8453,        // Base
+  destinationChainId: 42161,   // Arbitrum One
+  originCurrency: "0x0000000000000000000000000000000000000000", // ETH
+  destinationCurrency: "0x0000000000000000000000000000000000000000", // ETH
+  amount: "100000000000000",   // 0.0001 ETH (18 decimals)
+  tradeType: "EXACT_INPUT"
 };
 ```
 
