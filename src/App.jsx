@@ -1,6 +1,7 @@
 import { DynamicContextProvider, DynamicWidget, useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import { useState, useEffect } from "react";
+import QuoteRequestEditor from "./QuoteRequestEditor";
 import "./App.css";
 
 // Using the provided Dynamic Environment ID
@@ -205,7 +206,7 @@ async function monitorStatus(requestId) {
     console.log(\`Status: \${currentStatus}\`);
     
     if (currentStatus === 'success') {
-      console.log("✅ Bridge completed!");
+      console.log("Bridge completed!");
       return;
     }
     
@@ -307,6 +308,125 @@ const quoteRequest = {
     return snippets.step1;
 };
 
+function QuoteSummary({ quoteResponse }) {
+    if (!quoteResponse || !quoteResponse.details) return null;
+
+    const details = quoteResponse.details;
+    const fees = quoteResponse.fees;
+    const step = quoteResponse.steps?.[0];
+
+    return (
+        <div style={{
+            marginTop: "20px",
+            padding: "20px",
+            background: "#0D0C0D",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            borderRadius: "12px"
+        }}>
+            <h3 style={{ marginTop: 0, marginBottom: "20px", color: "#e0e0e0", fontSize: "1.2rem" }}>
+                Quote Summary
+            </h3>
+
+            {/* Operation Type */}
+            <div style={{ marginBottom: "15px", padding: "10px", background: "#1a1a1a", borderRadius: "8px" }}>
+                <div style={{ fontSize: "0.85rem", color: "#a0a0a0", marginBottom: "5px" }}>Operation</div>
+                <div style={{ fontSize: "1rem", color: "#e0e0e0", fontWeight: 600, textTransform: "capitalize" }}>
+                    {details.operation || "Bridge"}
+                </div>
+            </div>
+
+            {/* Input/Output */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "15px", alignItems: "center", marginBottom: "15px" }}>
+                {/* Input */}
+                <div style={{ padding: "15px", background: "#1a1a1a", borderRadius: "8px" }}>
+                    <div style={{ fontSize: "0.85rem", color: "#a0a0a0", marginBottom: "8px" }}>You Send</div>
+                    <div style={{ fontSize: "1.1rem", color: "#e0e0e0", fontWeight: 600, marginBottom: "4px" }}>
+                        {details.currencyIn?.amountFormatted || "0"} {details.currencyIn?.currency?.symbol || "ETH"}
+                    </div>
+                    <div style={{ fontSize: "0.85rem", color: "#a0a0a0" }}>
+                        {details.currencyIn?.currency?.name || ""} on Chain {details.currencyIn?.currency?.chainId || ""}
+                    </div>
+                    <div style={{ fontSize: "0.8rem", color: "#888", marginTop: "4px" }}>
+                        ~${parseFloat(details.currencyIn?.amountUsd || 0).toFixed(4)} USD
+                    </div>
+                </div>
+
+                {/* Arrow */}
+                <div style={{ fontSize: "1.5rem", color: "#4615C8" }}>→</div>
+
+                {/* Output */}
+                <div style={{ padding: "15px", background: "#1a1a1a", borderRadius: "8px" }}>
+                    <div style={{ fontSize: "0.85rem", color: "#a0a0a0", marginBottom: "8px" }}>You Receive</div>
+                    <div style={{ fontSize: "1.1rem", color: "#51cf66", fontWeight: 600, marginBottom: "4px" }}>
+                        {details.currencyOut?.amountFormatted || "0"} {details.currencyOut?.currency?.symbol || "ETH"}
+                    </div>
+                    <div style={{ fontSize: "0.85rem", color: "#a0a0a0" }}>
+                        {details.currencyOut?.currency?.name || ""} on Chain {details.currencyOut?.currency?.chainId || ""}
+                    </div>
+                    <div style={{ fontSize: "0.8rem", color: "#888", marginTop: "4px" }}>
+                        ~${parseFloat(details.currencyOut?.amountUsd || 0).toFixed(4)} USD
+                    </div>
+                </div>
+            </div>
+
+            {/* Rate & Impact */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "15px" }}>
+                <div style={{ padding: "12px", background: "#1a1a1a", borderRadius: "8px" }}>
+                    <div style={{ fontSize: "0.85rem", color: "#a0a0a0", marginBottom: "5px" }}>Rate</div>
+                    <div style={{ fontSize: "0.95rem", color: "#e0e0e0" }}>
+                        1 {details.currencyIn?.currency?.symbol || "ETH"} = {parseFloat(details.rate || 0).toFixed(4)} {details.currencyOut?.currency?.symbol || "ETH"}
+                    </div>
+                </div>
+                <div style={{ padding: "12px", background: "#1a1a1a", borderRadius: "8px" }}>
+                    <div style={{ fontSize: "0.85rem", color: "#a0a0a0", marginBottom: "5px" }}>Price Impact</div>
+                    <div style={{ fontSize: "0.95rem", color: parseFloat(details.totalImpact?.percent || 0) < 0 ? "#ff6b6b" : "#51cf66" }}>
+                        {details.totalImpact?.percent || "0"}%
+                    </div>
+                </div>
+            </div>
+
+            {/* Fees Breakdown */}
+            {fees && (
+                <div style={{ marginBottom: "15px" }}>
+                    <div style={{ fontSize: "0.85rem", color: "#a0a0a0", marginBottom: "8px" }}>Fees</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "8px", fontSize: "0.85rem" }}>
+                        {fees.gas && parseFloat(fees.gas.amountUsd) > 0 && (
+                            <div style={{ padding: "8px", background: "#1a1a1a", borderRadius: "6px" }}>
+                                <div style={{ color: "#a0a0a0" }}>Gas</div>
+                                <div style={{ color: "#e0e0e0" }}>~${parseFloat(fees.gas.amountUsd).toFixed(4)}</div>
+                            </div>
+                        )}
+                        {fees.relayer && parseFloat(fees.relayer.amountUsd) > 0 && (
+                            <div style={{ padding: "8px", background: "#1a1a1a", borderRadius: "6px" }}>
+                                <div style={{ color: "#a0a0a0" }}>Relayer</div>
+                                <div style={{ color: "#e0e0e0" }}>~${parseFloat(fees.relayer.amountUsd).toFixed(4)}</div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Additional Info */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginTop: "15px", paddingTop: "15px", borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}>
+                {details.timeEstimate && (
+                    <div>
+                        <div style={{ fontSize: "0.85rem", color: "#a0a0a0" }}>Estimated Time</div>
+                        <div style={{ fontSize: "0.95rem", color: "#e0e0e0" }}>{details.timeEstimate} seconds</div>
+                    </div>
+                )}
+                {step?.requestId && (
+                    <div>
+                        <div style={{ fontSize: "0.85rem", color: "#a0a0a0" }}>Request ID</div>
+                        <div style={{ fontSize: "0.8rem", color: "#888", fontFamily: "monospace", wordBreak: "break-all" }}>
+                            {step.requestId}
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
 function JsonViewer({ title, data, isExpanded, onToggle }) {
     if (!data) return null;
 
@@ -390,188 +510,92 @@ function AppContent() {
     const [relayResult, setRelayResult] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [status, setStatus] = useState(null);
-    const [currentStep, setCurrentStep] = useState(1);
-    const [activeTab, setActiveTab] = useState("demo");
     const [jsonData, setJsonData] = useState({
         quoteRequest: null,
-        quoteResponse: null,
-        transactionData: null,
-        statusData: null
+        quoteResponse: null
     });
     const [expandedJson, setExpandedJson] = useState({
         quoteRequest: false,
-        quoteResponse: false,
-        transactionData: false,
-        statusData: false
+        quoteResponse: false
     });
     const { primaryWallet, user } = useDynamicContext();
 
     // Get wallet address from Dynamic
     const accountAddress = primaryWallet?.address;
 
-    // Step 1: Configure - Check if wallet is connected
-    const isConfigured = !!accountAddress;
+    // Helper to create default quote request
+    const createDefaultQuoteRequest = (address) => ({
+        user: address || "YOUR_WALLET_ADDRESS",
+        originChainId: 8453,
+        destinationChainId: 42161,
+        originCurrency: "0x0000000000000000000000000000000000000000",
+        destinationCurrency: "0x0000000000000000000000000000000000000000",
+        amount: "100000000000000",
+        tradeType: "EXACT_INPUT"
+    });
 
-    // Log wallet connection changes
+    const [quoteRequestJson, setQuoteRequestJson] = useState(() =>
+        JSON.stringify(createDefaultQuoteRequest(accountAddress), null, 2)
+    );
+
+    // Update quote request template when wallet connects
     useEffect(() => {
         if (accountAddress) {
-            console.log("🔌 Wallet Connected:", {
+            console.log("Wallet Connected:", {
                 address: accountAddress,
                 walletType: primaryWallet?.connector?.name || "Unknown",
                 chainId: primaryWallet?.chainId || "Unknown",
                 user: user?.email || user?.username || "Unknown"
             });
-            console.log("✅ Step 1 Complete: Wallet Configured");
-        } else {
-            console.log("🔌 Wallet Disconnected");
-            console.log("1️⃣ Step 1: Please connect wallet");
+            // Update user address in quote request if it's still the placeholder
+            try {
+                const currentRequest = JSON.parse(quoteRequestJson);
+                if (currentRequest.user === "YOUR_WALLET_ADDRESS" || !currentRequest.user) {
+                    setQuoteRequestJson(JSON.stringify({
+                        ...currentRequest,
+                        user: accountAddress
+                    }, null, 2));
+                }
+            } catch (e) {
+                // Invalid JSON, will be caught on submit
+            }
         }
     }, [accountAddress, primaryWallet, user]);
 
-    // Log step changes
-    useEffect(() => {
-        console.log(`📍 Current Step: ${currentStep}`, {
-            isConfigured,
-            hasQuote: !!relayResult?.quote,
-            hasTxHash: !!relayResult?.txHash,
-            status: status || "none",
-            requestId: relayResult?.requestId || "none"
-        });
-    }, [currentStep, isConfigured, relayResult, status]);
-
-    // Step 4: Monitor Status
-    const monitorStatus = async (requestId) => {
-        if (!requestId) {
-            console.warn("⚠️ Cannot monitor status: No requestId provided");
-            return;
-        }
-
-        console.log("🔍 Step 4: Starting Status Monitoring...");
-        console.log(`📋 Request ID: ${requestId}`);
-
-        const RELAY_API_URL = "https://api.relay.link";
-        const maxAttempts = 60;
-        let attempts = 0;
-
-        const checkStatus = async () => {
-            try {
-                const statusUrl = `${RELAY_API_URL}/intents/status/v3?requestId=${requestId}`;
-                console.log(`📡 Checking status (Attempt ${attempts + 1}/${maxAttempts}):`, {
-                    url: statusUrl,
-                    timestamp: new Date().toISOString()
-                });
-
-                const response = await fetch(statusUrl);
-
-                if (!response.ok) {
-                    console.error("❌ Status check failed:", {
-                        status: response.status,
-                        statusText: response.statusText
-                    });
-                    throw new Error("Failed to check status");
-                }
-
-                const statusData = await response.json();
-                const currentStatus = statusData.status;
-                setStatus(currentStatus);
-
-                // Store status data for UI display
-                setJsonData(prev => ({
-                    ...prev,
-                    statusData: {
-                        ...statusData,
-                        attempt: attempts + 1,
-                        timestamp: new Date().toISOString()
-                    }
-                }));
-
-                console.log(`📊 Status Update:`, {
-                    status: currentStatus,
-                    attempt: attempts + 1,
-                    requestId: requestId,
-                    fullResponse: statusData,
-                    timestamp: new Date().toISOString()
-                });
-
-                if (currentStatus === 'waiting') {
-                    console.log("⏳ Status: waiting - User submitted deposit transaction, waiting for indexing");
-                } else if (currentStatus === 'pending') {
-                    console.log("⏳ Status: pending - Deposit indexed, Relay Solver preparing fill transaction");
-                } else if (currentStatus === 'success') {
-                    console.log("🎉 SUCCESS! Status: success - Relay Solver executed Fill Tx, funds reached recipient!");
-                    setRelayResult(prev => ({
-                        ...prev,
-                        message: "🎉 Step 4 Complete: Bridge Completed Successfully!",
-                    }));
-                    setCurrentStep(5);
-                    console.log("✅ Step 4 Complete: Moving to Step 5 (Optimize)");
-                    return;
-                }
-
-                if (currentStatus === 'failure' || currentStatus === 'refund') {
-                    console.error(`❌ Transaction ${currentStatus}:`, {
-                        status: currentStatus,
-                        requestId: requestId,
-                        timestamp: new Date().toISOString()
-                    });
-                    setError(`Transaction ${currentStatus}`);
-                    return;
-                }
-
-                attempts++;
-                if (attempts < maxAttempts && (currentStatus === 'pending' || currentStatus === 'waiting')) {
-                    console.log(`⏭️ Will check again in 1 second... (${attempts}/${maxAttempts} attempts)`);
-                    setTimeout(checkStatus, 1000);
-                } else if (attempts >= maxAttempts) {
-                    console.warn("⚠️ Max attempts reached for status monitoring");
-                }
-            } catch (err) {
-                console.error("❌ Status check error:", {
-                    error: err,
-                    message: err.message,
-                    attempt: attempts + 1,
-                    requestId: requestId,
-                    timestamp: new Date().toISOString()
-                });
-            }
-        };
-
-        console.log("⏰ Waiting 2 seconds before first status check...");
-        setTimeout(checkStatus, 2000);
-    };
-
-    // Step 2: Get Quote
+    // Get Quote using editable JSON from editor
     const handleGetQuote = async () => {
-        if (!accountAddress) {
-            console.warn("⚠️ Cannot get quote: Wallet not connected");
-            setError("Please connect your wallet first (Step 1: Configure).");
-            return;
-        }
-
-        console.log("🚀 Step 2: Starting Quote Request...");
         setLoading(true);
         setError(null);
         setRelayResult(null);
-        setStatus(null);
-        setJsonData({ quoteRequest: null, quoteResponse: null, transactionData: null, statusData: null });
-        setExpandedJson({ quoteRequest: false, quoteResponse: false, transactionData: false, statusData: false });
-        setCurrentStep(2);
 
         try {
+            // Parse the JSON from editor
+            let quoteRequest;
+            try {
+                quoteRequest = JSON.parse(quoteRequestJson);
+            } catch (parseError) {
+                throw new Error("Invalid JSON in quote request. Please check your syntax.");
+            }
+
+            // Validate required fields
+            if (!quoteRequest.user || quoteRequest.user === "YOUR_WALLET_ADDRESS") {
+                if (!accountAddress) {
+                    throw new Error("Please connect your wallet or set the 'user' field to your wallet address.");
+                }
+                quoteRequest.user = accountAddress;
+            }
+
+            if (!quoteRequest.originChainId || !quoteRequest.destinationChainId) {
+                throw new Error("Missing required fields: originChainId and destinationChainId are required.");
+            }
+
+            if (!quoteRequest.amount || !quoteRequest.tradeType) {
+                throw new Error("Missing required fields: amount and tradeType are required.");
+            }
+
             const RELAY_API_URL = "https://api.relay.link";
 
-            const quoteRequest = {
-                user: accountAddress,
-                originChainId: 8453,
-                destinationChainId: 42161,
-                originCurrency: "0x0000000000000000000000000000000000000000",
-                destinationCurrency: "0x0000000000000000000000000000000000000000",
-                amount: "100000000000000",
-                tradeType: "EXACT_INPUT"
-            };
-
-            console.log("📤 Quote Request:", {
+            console.log("Quote Request:", {
                 url: `${RELAY_API_URL}/quote/v2`,
                 method: "POST",
                 request: quoteRequest,
@@ -586,7 +610,7 @@ function AppContent() {
                 body: JSON.stringify(quoteRequest),
             });
 
-            console.log("📥 Quote Response:", {
+            console.log("Quote Response:", {
                 status: quoteResponse.status,
                 statusText: quoteResponse.statusText,
                 ok: quoteResponse.ok,
@@ -595,12 +619,12 @@ function AppContent() {
 
             if (!quoteResponse.ok) {
                 const errorData = await quoteResponse.json();
-                console.error("❌ Quote Error:", errorData);
+                console.error("Quote Error:", errorData);
                 throw new Error(errorData.message || "Failed to get quote from Relay API");
             }
 
             const quoteData = await quoteResponse.json();
-            console.log("✅ Quote received successfully:", {
+            console.log("Quote received successfully:", {
                 requestId: quoteData.requestId,
                 stepsCount: quoteData.steps?.length || 0,
                 steps: quoteData.steps?.map(step => ({
@@ -612,231 +636,38 @@ function AppContent() {
             });
 
             // Store JSON data for UI display
-            setJsonData(prev => ({
-                ...prev,
+            setJsonData({
                 quoteRequest: quoteRequest,
                 quoteResponse: quoteData
-            }));
+            });
 
             setRelayResult({
-                message: "✅ Step 2 Complete: Quote Retrieved!",
+                message: "Quote Retrieved Successfully!",
                 quote: quoteData,
                 requestId: quoteData.requestId,
                 steps: quoteData.steps,
             });
-            setCurrentStep(3);
-            console.log("✅ Step 2 Complete: Moving to Step 3 (Execute)");
+            console.log("Quote request completed successfully");
         } catch (err) {
-            console.error("❌ Quote Error Details:", {
+            console.error("Quote Error Details:", {
                 error: err,
                 message: err.message,
                 stack: err.stack,
                 timestamp: new Date().toISOString()
             });
             setError(err.message || "Failed to get quote from Relay API");
-            setCurrentStep(1);
         } finally {
             setLoading(false);
-            console.log("🏁 Quote request finished");
+            console.log("Quote request finished");
         }
     };
 
-    // Step 3: Execute Transaction
-    const handleExecute = async () => {
-        if (!relayResult?.quote || !primaryWallet) {
-            console.warn("⚠️ Cannot execute: Missing quote or wallet", {
-                hasQuote: !!relayResult?.quote,
-                hasWallet: !!primaryWallet,
-                accountAddress: accountAddress || "none"
-            });
-            setError("Please get a quote first (Step 2) and ensure wallet is connected.");
-            return;
-        }
-
-        console.log("🚀 Step 3: Starting Transaction Execution...");
-        setLoading(true);
-        setError(null);
-        setCurrentStep(3);
-
-        try {
-            const quote = relayResult.quote;
-            let requestId = null;
-
-            console.log("📋 Execution Details:", {
-                stepsCount: quote.steps?.length || 0,
-                requestId: quote.requestId,
-                wallet: {
-                    address: accountAddress,
-                    connector: primaryWallet?.connector?.name || "Unknown",
-                    chainId: primaryWallet?.chainId || "Unknown"
-                }
-            });
-
-            // Get the signer/provider from Dynamic wallet
-            if (!primaryWallet) {
-                console.error("❌ Wallet not available");
-                throw new Error("Wallet not available");
-            }
-
-            console.log("🔄 Processing steps...");
-            for (let i = 0; i < quote.steps.length; i++) {
-                const step = quote.steps[i];
-                const item = step.items[0];
-
-                console.log(`📝 Processing step ${i + 1}/${quote.steps.length}:`, {
-                    kind: step.kind,
-                    requestId: step.requestId,
-                    item: {
-                        to: item?.data?.to,
-                        value: item?.data?.value,
-                        hasData: !!item?.data?.data
-                    }
-                });
-
-                if (step.kind === 'transaction') {
-                    console.log("💳 Executing transaction step...");
-
-                    const txParams = {
-                        to: item.data.to,
-                        data: item.data.data || "0x",
-                        value: BigInt(item.data.value || "0"),
-                        chainId: 8453,
-                    };
-
-                    console.log("📤 Sending transaction:", {
-                        ...txParams,
-                        value: txParams.value.toString(),
-                        walletMethod: primaryWallet.sendTransaction ? "sendTransaction" : "Using connector"
-                    });
-
-                    // Try different methods to send transaction with Dynamic SDK
-                    let hash;
-
-                    // Log available methods for debugging
-                    console.log("🔍 Available wallet methods:", {
-                        hasSendTransaction: !!primaryWallet.sendTransaction,
-                        hasConnector: !!primaryWallet.connector,
-                        connectorType: primaryWallet.connector?.constructor?.name,
-                        connectorMethods: primaryWallet.connector ? Object.keys(primaryWallet.connector) : [],
-                        walletMethods: Object.keys(primaryWallet)
-                    });
-
-                    if (typeof primaryWallet.sendTransaction === 'function') {
-                        // Direct method on wallet
-                        hash = await primaryWallet.sendTransaction(txParams);
-                    } else if (primaryWallet.connector?.provider) {
-                        // Use provider/signer pattern (common with Dynamic SDK)
-                        try {
-                            const provider = primaryWallet.connector.provider;
-                            // For ethers v6
-                            if (provider.getSigner) {
-                                const signer = await provider.getSigner();
-                                const txResponse = await signer.sendTransaction({
-                                    to: item.data.to,
-                                    data: item.data.data || "0x",
-                                    value: item.data.value || "0",
-                                });
-                                hash = txResponse.hash;
-                            }
-                            // For ethers v5 or other providers
-                            else if (provider.getSigner && typeof provider.getSigner === 'function') {
-                                const signer = provider.getSigner();
-                                const txResponse = await signer.sendTransaction({
-                                    to: item.data.to,
-                                    data: item.data.data || "0x",
-                                    value: item.data.value || "0",
-                                });
-                                hash = txResponse.hash;
-                            }
-                            // Try direct sendTransaction on provider
-                            else if (typeof provider.sendTransaction === 'function') {
-                                const txResponse = await provider.sendTransaction({
-                                    to: item.data.to,
-                                    data: item.data.data || "0x",
-                                    value: item.data.value || "0",
-                                });
-                                hash = txResponse.hash;
-                            } else {
-                                throw new Error("Provider doesn't support sendTransaction");
-                            }
-                        } catch (providerError) {
-                            console.error("❌ Provider method failed:", providerError);
-                            throw providerError;
-                        }
-                    } else if (typeof primaryWallet.connector?.sendTransaction === 'function') {
-                        // Fallback to connector method if it exists
-                        hash = await primaryWallet.connector.sendTransaction(txParams);
-                    } else {
-                        const errorMsg = "No transaction method available. Wallet methods: " + Object.keys(primaryWallet).join(", ");
-                        console.error("❌", errorMsg);
-                        throw new Error(errorMsg);
-                    }
-                    requestId = step.requestId;
-
-                    console.log("✅ Transaction sent successfully:", {
-                        txHash: hash,
-                        requestId: requestId,
-                        timestamp: new Date().toISOString(),
-                        explorerUrl: `https://basescan.org/tx/${hash}`
-                    });
-
-                    // Store transaction data for UI display
-                    setJsonData(prev => ({
-                        ...prev,
-                        transactionData: {
-                            txHash: hash,
-                            requestId: requestId,
-                            transactionParams: txParams,
-                            timestamp: new Date().toISOString(),
-                            explorerUrl: `https://basescan.org/tx/${hash}`
-                        }
-                    }));
-
-                    setRelayResult(prev => ({
-                        ...prev,
-                        message: "✅ Step 3 Complete: Transaction Submitted!",
-                        txHash: hash,
-                        requestId: requestId,
-                    }));
-
-                    setCurrentStep(4);
-                    console.log("✅ Step 3 Complete: Moving to Step 4 (Monitor Status)");
-
-                    if (requestId) {
-                        console.log("🔍 Starting status monitoring for requestId:", requestId);
-                        monitorStatus(requestId);
-                    }
-                } else if (step.kind === 'signature') {
-                    console.log("✍️ Step Kind: signature - Signature step detected");
-                }
-            }
-        } catch (err) {
-            console.error("❌ Execution Error Details:", {
-                error: err,
-                message: err.message,
-                stack: err.stack,
-                timestamp: new Date().toISOString()
-            });
-            setError(err.message || "Failed to execute transaction");
-            setCurrentStep(2);
-        } finally {
-            setLoading(false);
-            console.log("🏁 Transaction execution finished");
-        }
-    };
-
-    // Log tab changes
-    useEffect(() => {
-        console.log(`📑 Tab switched to: ${activeTab}`);
-    }, [activeTab]);
 
     // Log component mount
     useEffect(() => {
-        console.log("🚀 Relay API Sandbox initialized");
-        console.log("📚 Documentation: https://docs.relay.link/references/api/quickstart.md");
+        console.log("Relay API Sandbox initialized");
+        console.log("Documentation: https://docs.relay.link/references/api/quickstart.md");
     }, []);
-
-    const codeSnippet = getCodeSnippets(currentStep, accountAddress, relayResult, status);
 
     return (
         <div className="app-container">
@@ -846,223 +677,147 @@ function AppContent() {
                     <h1>Relay API Sandbox</h1>
                 </div>
                 <p className="subtitle">
-                    Test the API, SDK, and explore code snippets
+                    Interactive code editor to test and explore Relay API
                 </p>
 
-                {/* Tabs */}
-                <div className="tabs">
-                    <button
-                        className={`tab ${activeTab === "demo" ? "active" : ""}`}
-                        onClick={() => setActiveTab("demo")}
-                    >
-                        🎮 Live Demo
-                    </button>
-                    <button
-                        className={`tab ${activeTab === "code" ? "active" : ""}`}
-                        onClick={() => setActiveTab("code")}
-                    >
-                        💻 Code Snippets
-                    </button>
+                {/* Wallet Connection */}
+                <div className="connect-section">
+                    <DynamicWidget />
+                    {!accountAddress && (
+                        <p style={{ marginTop: "15px", fontSize: "0.9rem", color: "#a0a0a0", textAlign: "center" }}>
+                            Connect your wallet to auto-fill the 'user' field, or manually set it in the editor
+                        </p>
+                    )}
                 </div>
 
-                {activeTab === "demo" && (
-                    <>
-                        <div className="connect-section">
-                            <DynamicWidget />
-                            {!accountAddress && (
-                                <p style={{ marginTop: "15px", fontSize: "0.9rem", color: "#a0a0a0", textAlign: "center" }}>
-                                    Click the button above to connect your wallet or sign up with email/social
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="relay-section">
-                            <h2>Relay API Quickstart - 5-Step Flow</h2>
-                            <p className="description">
-                                Bridge 0.0001 ETH from Base to Arbitrum using Relay API.
-                            </p>
-
-                            {/* Step Progress Indicator */}
-                            <div style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                marginBottom: "20px",
-                                padding: "15px",
-                                background: "#0D0C0D",
-                                borderRadius: "10px",
-                                fontSize: "0.9rem",
-                                border: "1px solid #0D0C0D"
-                            }}>
-                                <div style={{ textAlign: "center", flex: 1 }}>
-                                    <div style={{
-                                        fontWeight: currentStep >= 1 ? "bold" : "normal",
-                                        color: currentStep >= 1 ? "#4615C8" : "#707070"
-                                    }}>
-                                        {isConfigured ? "✅" : "1️⃣"} Configure
-                                    </div>
-                                </div>
-                                <div style={{ textAlign: "center", flex: 1 }}>
-                                    <div style={{
-                                        fontWeight: currentStep >= 2 ? "bold" : "normal",
-                                        color: currentStep >= 2 ? "#7c8cf8" : "#707070"
-                                    }}>
-                                        {relayResult?.quote ? "✅" : "2️⃣"} Quote
-                                    </div>
-                                </div>
-                                <div style={{ textAlign: "center", flex: 1 }}>
-                                    <div style={{
-                                        fontWeight: currentStep >= 3 ? "bold" : "normal",
-                                        color: currentStep >= 3 ? "#7c8cf8" : "#707070"
-                                    }}>
-                                        {relayResult?.txHash ? "✅" : "3️⃣"} Execute
-                                    </div>
-                                </div>
-                                <div style={{ textAlign: "center", flex: 1 }}>
-                                    <div style={{
-                                        fontWeight: currentStep >= 4 ? "bold" : "normal",
-                                        color: currentStep >= 4 ? "#7c8cf8" : "#707070"
-                                    }}>
-                                        {status === 'success' ? "✅" : status ? "⏳" : "4️⃣"} Monitor
-                                    </div>
-                                </div>
-                                <div style={{ textAlign: "center", flex: 1 }}>
-                                    <div style={{
-                                        fontWeight: currentStep >= 5 ? "bold" : "normal",
-                                        color: currentStep >= 5 ? "#7c8cf8" : "#707070"
-                                    }}>
-                                        {currentStep >= 5 ? "✅" : "5️⃣"} Optimize
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                                <button
-                                    onClick={handleGetQuote}
-                                    disabled={loading || !accountAddress}
-                                    className="relay-button"
-                                >
-                                    {loading && currentStep === 2 ? "Getting Quote..." : accountAddress ? "2. Get Quote" : "1. Connect Wallet First"}
-                                </button>
-
-                                {relayResult?.quote && (
-                                    <button
-                                        onClick={handleExecute}
-                                        disabled={loading || !primaryWallet}
-                                        className="relay-button"
-                                        style={{ background: "linear-gradient(135deg, #10b981 0%, #059669 100%)" }}
-                                    >
-                                        {loading && currentStep === 3 ? "Executing..." : "3. Execute Bridge"}
-                                    </button>
-                                )}
-                            </div>
-
-                            {error && (
-                                <div className="error-message">
-                                    ⚠️ {error}
-                                </div>
-                            )}
-
-                            {relayResult && (
-                                <div className="success-message">
-                                    <div style={{ fontWeight: "bold", marginBottom: "8px" }}>
-                                        {relayResult.message}
-                                    </div>
-                                    {relayResult.requestId && (
-                                        <div className="task-id">
-                                            Request ID: {relayResult.requestId}
-                                        </div>
-                                    )}
-                                    {relayResult.txHash && (
-                                        <div className="task-id">
-                                            TX Hash: {relayResult.txHash}
-                                        </div>
-                                    )}
-                                    {status && (
-                                        <div className="task-id" style={{ marginTop: "8px", color: "#51cf66" }}>
-                                            Status: {status}
-                                            {status === 'waiting' && " - Deposit submitted, waiting for indexing"}
-                                            {status === 'pending' && " - Deposit indexed, preparing fill transaction"}
-                                            {status === 'success' && " - Bridge completed successfully!"}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* JSON Data Viewers */}
-                            {currentStep >= 2 && jsonData.quoteRequest && (
-                                <JsonViewer
-                                    title="📤 Step 2: Quote Request JSON"
-                                    data={jsonData.quoteRequest}
-                                    isExpanded={expandedJson.quoteRequest}
-                                    onToggle={() => setExpandedJson(prev => ({ ...prev, quoteRequest: !prev.quoteRequest }))}
-                                />
-                            )}
-
-                            {currentStep >= 2 && jsonData.quoteResponse && (
-                                <JsonViewer
-                                    title="📥 Step 2: Quote Response JSON"
-                                    data={jsonData.quoteResponse}
-                                    isExpanded={expandedJson.quoteResponse}
-                                    onToggle={() => setExpandedJson(prev => ({ ...prev, quoteResponse: !prev.quoteResponse }))}
-                                />
-                            )}
-
-                            {currentStep >= 3 && jsonData.transactionData && (
-                                <JsonViewer
-                                    title="💳 Step 3: Transaction Data JSON"
-                                    data={jsonData.transactionData}
-                                    isExpanded={expandedJson.transactionData}
-                                    onToggle={() => setExpandedJson(prev => ({ ...prev, transactionData: !prev.transactionData }))}
-                                />
-                            )}
-
-                            {currentStep >= 4 && jsonData.statusData && (
-                                <JsonViewer
-                                    title="📊 Step 4: Status Response JSON"
-                                    data={jsonData.statusData}
-                                    isExpanded={expandedJson.statusData}
-                                    onToggle={() => setExpandedJson(prev => ({ ...prev, statusData: !prev.statusData }))}
-                                />
-                            )}
-
-                            {currentStep >= 5 && (
-                                <div style={{
-                                    marginTop: "20px",
-                                    padding: "15px",
-                                    background: "#0D0C0D",
-                                    border: "2px solid #3b82f6",
-                                    borderRadius: "10px"
-                                }}>
-                                    <h3 style={{ marginTop: 0, color: "#60a5fa" }}>🎉 Step 5: Optimize</h3>
-                                    <p style={{ marginBottom: "10px", color: "#93c5fd" }}>
-                                        You've successfully executed your first cross-chain transaction with Relay!
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-                    </>
-                )}
-
-                {activeTab === "code" && (
-                    <div className="code-section">
-                        <CodeSnippet snippetData={codeSnippet} />
-                        <div style={{ marginTop: "20px", padding: "15px", background: "#0D0C0D", borderRadius: "10px", fontSize: "0.9rem", color: "#b0b0b0", border: "1px solid #0D0C0D" }}>
-                            <p style={{ margin: 0 }}>
-                                💡 <strong>Tip:</strong> Switch to "Live Demo" to test the API and SDK in real-time. The code snippets update based on your current step. Use the approach tabs above to see different implementation methods.
-                            </p>
-                        </div>
+                {/* Quote Request Editor */}
+                <div className="relay-section">
+                    <h2>Quote Request Editor</h2>
+                    <p className="description">
+                        Edit the JSON below to customize your quote request. Change amounts, chains, currencies, or add optional parameters.
+                    </p>
+                    <div style={{
+                        marginBottom: "20px",
+                        padding: "12px",
+                        background: "#1a1a1a",
+                        borderRadius: "8px",
+                        border: "1px solid rgba(70, 21, 200, 0.3)",
+                        fontSize: "0.9rem",
+                        color: "#b0b0b0"
+                    }}>
+                        <strong style={{ color: "#e0e0e0" }}>Note:</strong> Getting a quote is a read-only API call. No transaction is sent, no wallet signature is required, and no funds are moved. The quote shows you what would happen if you execute the transaction.
                     </div>
-                )}
+
+                    <QuoteRequestEditor
+                        value={quoteRequestJson}
+                        onChange={(value) => setQuoteRequestJson(value || "")}
+                        theme="vs-dark"
+                    />
+
+                    <div style={{
+                        marginTop: "20px",
+                        display: "flex",
+                        gap: "10px",
+                        alignItems: "stretch"
+                    }}>
+                        <button
+                            onClick={handleGetQuote}
+                            disabled={loading}
+                            className="relay-button"
+                            style={{ flex: 1 }}
+                        >
+                            {loading ? "Getting Quote..." : "Get Quote"}
+                        </button>
+                        <button
+                            onClick={() => {
+                                setQuoteRequestJson(JSON.stringify(createDefaultQuoteRequest(accountAddress), null, 2));
+                            }}
+                            style={{
+                                background: "#1a1a1a",
+                                border: "1px solid #4615C8",
+                                color: "#e0e0e0",
+                                borderRadius: "10px",
+                                padding: "15px 24px",
+                                fontSize: "1.1rem",
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                transition: "all 0.2s",
+                                minWidth: "120px"
+                            }}
+                            onMouseEnter={(e) => {
+                                if (!e.target.disabled) {
+                                    e.target.style.background = "#222222";
+                                    e.target.style.borderColor = "#5a2ada";
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                e.target.style.background = "#1a1a1a";
+                                e.target.style.borderColor = "#4615C8";
+                            }}
+                        >
+                            Reset
+                        </button>
+                    </div>
+
+                    {/* Error Display */}
+                    {error && (
+                        <div className="error-message" style={{ marginTop: "20px" }}>
+                            {error}
+                        </div>
+                    )}
+
+                    {/* Success Message */}
+                    {relayResult && (
+                        <div className="success-message" style={{ marginTop: "20px" }}>
+                            <div style={{ fontWeight: "bold", marginBottom: "8px" }}>
+                                {relayResult.message}
+                            </div>
+                            {relayResult.requestId && (
+                                <div className="task-id">
+                                    Request ID: {relayResult.requestId}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Quote Summary */}
+                    {relayResult?.quote && (
+                        <QuoteSummary quoteResponse={relayResult.quote} />
+                    )}
+
+                    {/* JSON Data Viewers */}
+                    {jsonData.quoteRequest && (
+                        <JsonViewer
+                            title="Quote Request JSON (sent to API)"
+                            data={jsonData.quoteRequest}
+                            isExpanded={expandedJson.quoteRequest}
+                            onToggle={() => setExpandedJson(prev => ({ ...prev, quoteRequest: !prev.quoteRequest }))}
+                        />
+                    )}
+
+                    {jsonData.quoteResponse && (
+                        <JsonViewer
+                            title="Quote Response JSON"
+                            data={jsonData.quoteResponse}
+                            isExpanded={expandedJson.quoteResponse}
+                            onToggle={() => setExpandedJson(prev => ({ ...prev, quoteResponse: !prev.quoteResponse }))}
+                        />
+                    )}
+                </div>
 
                 <div className="info-section">
-                    <h3>Relay API Quickstart - 5 Steps:</h3>
+                    <h3>How to Use:</h3>
                     <ol>
-                        <li><strong>Configure:</strong> Connect wallet with ETH on Base (~$2 USD). Base URL: https://api.relay.link</li>
-                        <li><strong>Quote:</strong> Call `/quote/v2` endpoint to get transaction data and steps array.</li>
-                        <li><strong>Execute:</strong> Iterate through steps array. Check step.kind and submit using your wallet.</li>
-                        <li><strong>Monitor:</strong> Poll `/intents/status/v3` with requestId every second.</li>
-                        <li><strong>Optimize:</strong> Add App Fees, Smart Accounts, Transaction Indexing</li>
+                        <li><strong>Connect Wallet (Optional):</strong> Connect your wallet to auto-fill the 'user' field, or manually set your wallet address</li>
+                        <li><strong>Edit Quote Request:</strong> Modify the JSON in the editor above - change amounts, chains, currencies, or add optional parameters</li>
+                        <li><strong>Get Quote:</strong> Click "Get Quote" to send your request to the Relay API</li>
+                        <li><strong>View Results:</strong> Expand the JSON viewers below to see the request you sent and the response you received</li>
                     </ol>
+                    <div style={{ marginTop: "15px", padding: "10px", background: "#1a1a1a", borderRadius: "8px", fontSize: "0.9rem", color: "#b0b0b0" }}>
+                        <p style={{ margin: 0 }}>
+                            <strong>Tip:</strong> Try modifying the <code>amount</code>, <code>originChainId</code>, or <code>destinationChainId</code> fields to see different quotes. Check the <a href="https://docs.relay.link/references/api/quickstart.md" target="_blank" rel="noopener noreferrer" style={{ color: "#4615C8" }}>Relay API Quickstart</a> for more examples.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
