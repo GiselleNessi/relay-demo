@@ -10,6 +10,7 @@ An interactive sandbox application for testing the Relay API, SDK, and exploring
 - 🌉 **Cross-chain Bridging**: Bridge ETH from Base to Arbitrum via Relay API
 - 📊 **Real-time Monitoring**: Track transaction status with live updates
 - 🎨 **Dark Mode UI**: Modern, clean dark theme interface
+- 📦 **External Sandboxes**: Links to StackBlitz and CodeSandbox for editing and experimenting with code
 - ⚡ **Built with React and Vite**
 
 ## Setup
@@ -61,6 +62,15 @@ An interactive sandbox application for testing the Relay API, SDK, and exploring
   - **SDK (Dynamic)**: Using Dynamic SDK for wallet integration
   - **Direct Wallet (Ethers.js)**: Using Ethers.js directly
   - **Gas Sponsorship**: Examples with ERC-4337 and EIP-7702 smart accounts
+
+### External Sandboxes
+- For **Execute** and **Monitor** steps, use the "Open in StackBlitz" or "Open in CodeSandbox" buttons
+- These external sandboxes provide:
+  - **Full editability**: Edit code directly in the browser
+  - **Package installation**: Install any npm packages you need
+  - **Forking**: Clone and fork to create your own versions
+  - **Sharing**: Share your customized code with the team
+- The demo uses default code internally, but you can experiment freely in external sandboxes
 
 ## Code Snippets
 
