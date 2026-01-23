@@ -12,7 +12,6 @@ Click the link above to open this repository in CodeSandbox and explore all the 
 
 - **API Examples** - Direct API integration examples using fetch and REST endpoints
 - **SDK Examples** - Examples using Relay SDK and React hooks
-- **More Examples** - Advanced examples and use cases
 
 ## Learn More
 
