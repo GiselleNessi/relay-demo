@@ -16,6 +16,6 @@ Click the link above to open this repository in CodeSandbox and explore all the 
 
 ## Learn More
 
+- [What is Relay?](https://docs.relay.link/what-is-relay)
 - [Relay API Quickstart](https://docs.relay.link/references/api/quickstart.md)
 - [Relay API Overview](https://docs.relay.link/references/api/overview.md)
-- [What is Relay?](https://docs.relay.link/what-is-relay.md)
