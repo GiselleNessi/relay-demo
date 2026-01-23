@@ -61,6 +61,7 @@ const client = getClient();`;
 
     const handleConfigureSDK = async () => {
         try {
+            // Try to dynamically import SDK (will fail if not installed)
             // @ts-ignore
             const sdk = await import('@relayprotocol/relay-sdk');
             const chains = await import('viem/chains');
@@ -79,7 +80,7 @@ const client = getClient();`;
             setIsConfigured(true);
             setConfigStatus("✓ SDK configured successfully!");
         } catch (e: any) {
-            setConfigStatus(`Error: ${e.message || "SDK not available"}`);
+            setConfigStatus(`SDK not installed. To use the SDK, run: npm install @relayprotocol/relay-sdk viem`);
         }
     };
 

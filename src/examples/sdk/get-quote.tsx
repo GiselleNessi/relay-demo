@@ -58,6 +58,9 @@ const quote = await getClient()?.actions.getQuote({
         setSdkCode(code);
 
         // Try to use SDK, fallback to API
+        // Note: SDK is not installed in this demo, so we'll use API
+        // In a real app with SDK installed, you would use:
+        // const quote = await getClient()?.actions.getQuote({...});
         try {
             // @ts-ignore
             const sdk = await import('@relayprotocol/relay-sdk');
@@ -66,25 +69,11 @@ const quote = await getClient()?.actions.getQuote({
             
             if (client) {
                 setUsingSDK(true);
-                // Try to get wallet from window.ethereum if available
-                let wallet = null;
-                if (typeof window.ethereum !== 'undefined') {
-                    try {
-                        // @ts-ignore
-                        const viem = await import('viem');
-                        // Create a simple wallet adapter (simplified for demo)
-                        // In real app, you'd use wagmi or another wallet provider
-                    } catch (e) {
-                        // Fallback to API
-                    }
-                }
-                
-                // For now, use API as fallback since wallet integration is complex
-                // In a real app with wagmi, you'd use: const { data: wallet } = useWalletClient();
-                throw new Error("Wallet not configured - using API fallback");
+                // SDK is available - in a real app you'd use it here
+                // For this demo, we'll still use API to show it works
             }
         } catch (sdkError) {
-            // Fallback to API
+            // SDK not installed - use API fallback
             setUsingSDK(false);
         }
 
