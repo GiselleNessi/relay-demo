@@ -66,7 +66,7 @@ export function GetQuoteExample() {
 
     return (
         <div style={{ padding: "20px" }}>
-            <h2>Step 2: Get Quote</h2>
+            <h2>Step 1: Get Quote</h2>
             <p>Every action in Relay starts with a Quote. The quote endpoint handles all of your use cases, whether it's a bridge, swap, or cross-chain call.</p>
 
             <div style={{ marginBottom: "20px" }}>

@@ -100,8 +100,8 @@ export function MonitorExample({ requestId: propRequestId }: MonitorProps = {}) 
 
     return (
         <div style={{ padding: "20px" }}>
-            <h2>Step 4: Monitor</h2>
-            <p>Use the status endpoint with the requestId to track status and confirm success. Poll this endpoint once per second.</p>
+            <h2>Step 3: Monitor</h2>
+            <p>Use the status endpoint with the requestId to track status and confirm success. Poll this endpoint once per second. Use the requestId from Step 2 (Execute).</p>
 
             <div style={{ marginBottom: "20px" }}>
                 <label style={{ display: "block", marginBottom: "5px", color: "#b0b0b0" }}>

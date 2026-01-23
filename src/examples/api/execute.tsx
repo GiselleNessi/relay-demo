@@ -126,7 +126,7 @@ export function ExecuteExample({ quoteResponse: propQuoteResponse }: ExecuteProp
 
     return (
         <div style={{ padding: "20px" }}>
-            <h2>Step 3: Execute</h2>
+            <h2>Step 2: Execute</h2>
             <p>The quote endpoint returns a steps array. You need to iterate through these steps and prompt the user to sign or submit them.</p>
 
             {!quoteResponse && (
@@ -138,7 +138,7 @@ export function ExecuteExample({ quoteResponse: propQuoteResponse }: ExecuteProp
                     color: "#ffd700",
                     marginBottom: "20px"
                 }}>
-                    <strong>Note:</strong> Please complete Step 2 (Get Quote) first to get a quote response.
+                    <strong>Note:</strong> Please complete Step 1 (Get Quote) first to get a quote response.
                 </div>
             )}
 

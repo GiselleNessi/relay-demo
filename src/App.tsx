@@ -27,23 +27,23 @@ function App() {
                 id: "get-quote",
                 title: "Get Quote",
                 description: "Get a quote for cross-chain bridging. This is the first step - click to start!",
-                stepNumber: 2,
+                stepNumber: 1,
                 component: GetQuoteExample,
                 file: "src/examples/api/get-quote.tsx"
             },
             {
                 id: "execute",
                 title: "Execute",
-                description: "Execute the transaction from your quote. Complete Step 2 first.",
-                stepNumber: 3,
+                description: "Execute the transaction from your quote. Complete Step 1 first.",
+                stepNumber: 2,
                 component: ExecuteExample,
                 file: "src/examples/api/execute.tsx"
             },
             {
                 id: "monitor",
                 title: "Monitor",
-                description: "Monitor your transaction status. Use after executing Step 3.",
-                stepNumber: 4,
+                description: "Monitor your transaction status. Use after executing Step 2.",
+                stepNumber: 3,
                 component: MonitorExample,
                 file: "src/examples/api/monitor.tsx"
             }
@@ -143,7 +143,7 @@ function App() {
                                 justifyContent: "center",
                                 fontWeight: "bold",
                                 flexShrink: 0
-                            }}>2</div>
+                            }}>1</div>
                             <div style={{ flex: 1 }}>
                                 <strong style={{ color: "#e0e0e0" }}>Get Quote</strong>
                                 <p style={{ color: "#a0a0a0", margin: "5px 0 0 0", fontSize: "0.9rem" }}>
@@ -163,7 +163,7 @@ function App() {
                                 justifyContent: "center",
                                 fontWeight: "bold",
                                 flexShrink: 0
-                            }}>3</div>
+                            }}>2</div>
                             <div style={{ flex: 1 }}>
                                 <strong style={{ color: "#e0e0e0" }}>Execute</strong>
                                 <p style={{ color: "#a0a0a0", margin: "5px 0 0 0", fontSize: "0.9rem" }}>
@@ -183,7 +183,7 @@ function App() {
                                 justifyContent: "center",
                                 fontWeight: "bold",
                                 flexShrink: 0
-                            }}>4</div>
+                            }}>3</div>
                             <div style={{ flex: 1 }}>
                                 <strong style={{ color: "#e0e0e0" }}>Monitor</strong>
                                 <p style={{ color: "#a0a0a0", margin: "5px 0 0 0", fontSize: "0.9rem" }}>
