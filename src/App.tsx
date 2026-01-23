@@ -22,7 +22,7 @@ function App() {
     const [selectedExample, setSelectedExample] = useState<Example | null>(null);
     const [quoteResponse, setQuoteResponse] = useState<any>(null);
 
-    const examples: { api: Example[]; sdk: Example[]; more: Example[] } = {
+        const examples: { api: Example[]; sdk: Example[] } = {
         api: [
             {
                 id: "get-quote",
@@ -78,15 +78,7 @@ function App() {
                 component: ClaimAppFeesExample,
                 file: "src/examples/sdk/claim-app-fees.tsx"
             }
-        ],
-        more: [
-            {
-                id: "coming-soon",
-                title: "More Examples",
-                description: "Additional examples coming soon",
-                disabled: true
-            }
-        ]
+            ]
     };
 
     const handleExampleClick = (example: Example) => {
@@ -368,27 +360,8 @@ function App() {
                                 </div>
                             ))}
                         </div>
-                    </div>
-
-                    {/* More Examples */}
-                    <div className="example-category">
-                        <h2 className="category-title">More Examples</h2>
-                        <p className="category-description">
-                            Advanced examples and use cases
-                        </p>
-                        <div className="examples-list">
-                            {examples.more.map((example) => (
-                                <div
-                                    key={example.id}
-                                    className={`example-card ${example.disabled ? "disabled" : ""}`}
-                                >
-                                    <h3>{example.title}</h3>
-                                    <p>{example.description}</p>
-                                </div>
-                            ))}
                         </div>
                     </div>
-                </div>
 
                 <div className="footer">
                     <p>
