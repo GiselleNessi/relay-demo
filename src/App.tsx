@@ -11,6 +11,7 @@ interface Example {
     id: string;
     title: string;
     description: string;
+    stepNumber?: number;
     component?: React.ComponentType<any>;
     file?: string;
     disabled?: boolean;
@@ -24,22 +25,25 @@ function App() {
         api: [
             {
                 id: "get-quote",
-                title: "Step 2: Get Quote",
-                description: "Get a quote for cross-chain bridging using the Relay API",
+                title: "Get Quote",
+                description: "Get a quote for cross-chain bridging. This is the first step - click to start!",
+                stepNumber: 2,
                 component: GetQuoteExample,
                 file: "src/examples/api/get-quote.tsx"
             },
             {
                 id: "execute",
-                title: "Step 3: Execute",
-                description: "Execute a transaction from a quote response",
+                title: "Execute",
+                description: "Execute the transaction from your quote. Complete Step 2 first.",
+                stepNumber: 3,
                 component: ExecuteExample,
                 file: "src/examples/api/execute.tsx"
             },
             {
                 id: "monitor",
-                title: "Step 4: Monitor",
-                description: "Monitor transaction status using the requestId",
+                title: "Monitor",
+                description: "Monitor your transaction status. Use after executing Step 3.",
+                stepNumber: 4,
                 component: MonitorExample,
                 file: "src/examples/api/monitor.tsx"
             }
@@ -87,10 +91,13 @@ function App() {
                             borderRadius: "8px",
                             color: "#e0e0e0",
                             cursor: "pointer",
-                            fontSize: "0.9rem"
+                            fontSize: "0.9rem",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px"
                         }}
                     >
-                        ← Back to Examples
+                        <span>←</span> Back to Examples
                     </button>
                     <Component quoteResponse={quoteResponse} requestId={quoteResponse?.steps?.[0]?.requestId} />
                 </div>
@@ -109,12 +116,90 @@ function App() {
                     </p>
                 </div>
 
+                {/* Workflow Guide */}
+                <div style={{
+                    background: "linear-gradient(135deg, rgba(70, 21, 200, 0.1) 0%, rgba(70, 21, 200, 0.05) 100%)",
+                    border: "1px solid rgba(70, 21, 200, 0.3)",
+                    borderRadius: "12px",
+                    padding: "25px",
+                    marginBottom: "40px"
+                }}>
+                    <h3 style={{ color: "#e0e0e0", marginTop: 0, marginBottom: "15px", fontSize: "1.3rem" }}>
+                        How to Use
+                    </h3>
+                    <p style={{ color: "#b0b0b0", marginBottom: "20px", lineHeight: "1.6" }}>
+                        Follow these steps in order to complete a cross-chain bridge:
+                    </p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                            <div style={{
+                                width: "40px",
+                                height: "40px",
+                                borderRadius: "50%",
+                                background: "#4615C8",
+                                color: "white",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontWeight: "bold",
+                                flexShrink: 0
+                            }}>2</div>
+                            <div style={{ flex: 1 }}>
+                                <strong style={{ color: "#e0e0e0" }}>Get Quote</strong>
+                                <p style={{ color: "#a0a0a0", margin: "5px 0 0 0", fontSize: "0.9rem" }}>
+                                    Click the "Get Quote" card below to start. Enter your wallet address and get a quote for your bridge.
+                                </p>
+                            </div>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                            <div style={{
+                                width: "40px",
+                                height: "40px",
+                                borderRadius: "50%",
+                                background: "#4615C8",
+                                color: "white",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontWeight: "bold",
+                                flexShrink: 0
+                            }}>3</div>
+                            <div style={{ flex: 1 }}>
+                                <strong style={{ color: "#e0e0e0" }}>Execute</strong>
+                                <p style={{ color: "#a0a0a0", margin: "5px 0 0 0", fontSize: "0.9rem" }}>
+                                    After getting a quote, click "Execute" to submit the transaction to your wallet.
+                                </p>
+                            </div>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                            <div style={{
+                                width: "40px",
+                                height: "40px",
+                                borderRadius: "50%",
+                                background: "#4615C8",
+                                color: "white",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontWeight: "bold",
+                                flexShrink: 0
+                            }}>4</div>
+                            <div style={{ flex: 1 }}>
+                                <strong style={{ color: "#e0e0e0" }}>Monitor</strong>
+                                <p style={{ color: "#a0a0a0", margin: "5px 0 0 0", fontSize: "0.9rem" }}>
+                                    Use "Monitor" to track your transaction status using the requestId from execution.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="examples-grid">
                     {/* API Examples */}
                     <div className="example-category">
                         <h2 className="category-title">API Examples</h2>
                         <p className="category-description">
-                            Follow the Relay API Quickstart guide step by step
+                            Follow the Relay API Quickstart guide step by step. Click on any step to try it!
                         </p>
                         <div className="examples-list">
                             {examples.api.map((example) => (
@@ -123,15 +208,63 @@ function App() {
                                     className={`example-card ${example.disabled ? "disabled" : ""}`}
                                     onClick={() => handleExampleClick(example)}
                                     style={{
-                                        cursor: example.disabled ? "not-allowed" : "pointer"
+                                        cursor: example.disabled ? "not-allowed" : "pointer",
+                                        position: "relative",
+                                        transition: "all 0.2s ease"
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (!example.disabled) {
+                                            e.currentTarget.style.transform = "translateY(-2px)";
+                                            e.currentTarget.style.boxShadow = "0 4px 12px rgba(70, 21, 200, 0.3)";
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (!example.disabled) {
+                                            e.currentTarget.style.transform = "translateY(0)";
+                                            e.currentTarget.style.boxShadow = "none";
+                                        }
                                     }}
                                 >
+                                    {example.stepNumber && (
+                                        <div style={{
+                                            position: "absolute",
+                                            top: "15px",
+                                            right: "15px",
+                                            width: "30px",
+                                            height: "30px",
+                                            borderRadius: "50%",
+                                            background: "#4615C8",
+                                            color: "white",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            fontWeight: "bold",
+                                            fontSize: "0.9rem"
+                                        }}>
+                                            {example.stepNumber}
+                                        </div>
+                                    )}
                                     <h3>{example.title}</h3>
                                     <p>{example.description}</p>
                                     {example.file && (
                                         <p style={{ fontSize: "0.85rem", color: "#888", marginTop: "10px" }}>
                                             File: <code>{example.file}</code>
                                         </p>
+                                    )}
+                                    {!example.disabled && (
+                                        <div style={{
+                                            marginTop: "15px",
+                                            padding: "8px 16px",
+                                            background: "rgba(70, 21, 200, 0.2)",
+                                            border: "1px solid rgba(70, 21, 200, 0.4)",
+                                            borderRadius: "6px",
+                                            color: "#4615C8",
+                                            fontSize: "0.9rem",
+                                            fontWeight: 600,
+                                            textAlign: "center"
+                                        }}>
+                                            Click to Try →
+                                        </div>
                                     )}
                                 </div>
                             ))}
