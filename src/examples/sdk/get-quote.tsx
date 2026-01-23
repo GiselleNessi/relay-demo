@@ -19,6 +19,7 @@ export function GetQuoteSDKExample() {
     const [quoteResponse, setQuoteResponse] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
     const [sdkCode, setSdkCode] = useState("");
+    const [usingSDK, setUsingSDK] = useState(false);
 
     const handleGetQuote = async () => {
         // Validate wallet address
@@ -35,6 +36,7 @@ export function GetQuoteSDKExample() {
         setLoading(true);
         setError(null);
         setQuoteResponse(null);
+        setUsingSDK(false);
 
         // Show the SDK code that would be used
         const code = `import { getClient } from '@relayprotocol/relay-sdk';
@@ -55,10 +57,39 @@ const quote = await getClient()?.actions.getQuote({
 });`;
         setSdkCode(code);
 
-        // In a real app, you would use the SDK here
-        // For this demo, we'll show what the code looks like
+        // Try to use SDK, fallback to API
         try {
-            // Simulate API call (in real app, use SDK)
+            // @ts-ignore
+            const sdk = await import('@relayprotocol/relay-sdk');
+            const { getClient } = sdk;
+            const client = getClient();
+            
+            if (client) {
+                setUsingSDK(true);
+                // Try to get wallet from window.ethereum if available
+                let wallet = null;
+                if (typeof window.ethereum !== 'undefined') {
+                    try {
+                        // @ts-ignore
+                        const viem = await import('viem');
+                        // Create a simple wallet adapter (simplified for demo)
+                        // In real app, you'd use wagmi or another wallet provider
+                    } catch (e) {
+                        // Fallback to API
+                    }
+                }
+                
+                // For now, use API as fallback since wallet integration is complex
+                // In a real app with wagmi, you'd use: const { data: wallet } = useWalletClient();
+                throw new Error("Wallet not configured - using API fallback");
+            }
+        } catch (sdkError) {
+            // Fallback to API
+            setUsingSDK(false);
+        }
+
+        // Use API as fallback (or if SDK not available)
+        try {
             const response = await fetch("https://api.relay.link/quote/v2", {
                 method: "POST",
                 headers: {
@@ -82,6 +113,7 @@ const quote = await getClient()?.actions.getQuote({
 
             const data = await response.json();
             setQuoteResponse(data);
+            localStorage.setItem("relayQuoteResponse", JSON.stringify(data));
             console.log("Quote received:", data);
         } catch (err: any) {
             setError(err.message);
@@ -105,6 +137,7 @@ const quote = await getClient()?.actions.getQuote({
             }}>
                 <p style={{ color: "#b0b0b0", margin: 0, fontSize: "0.9rem" }}>
                     <strong style={{ color: "#4615C8" }}>SDK Advantage:</strong> The SDK provides a cleaner API with built-in wallet integration and type safety.
+                    {usingSDK && <span style={{ color: "#4ade80", marginLeft: "10px" }}>✓ Using SDK</span>}
                 </p>
             </div>
 

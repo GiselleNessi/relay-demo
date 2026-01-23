@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 export function SetupExample() {
     const [setupCode, setSetupCode] = useState<string>("");
     const [isConfigured, setIsConfigured] = useState(false);
+    const [configStatus, setConfigStatus] = useState<string>("");
 
     useEffect(() => {
         // Show setup code
@@ -28,16 +29,59 @@ const client = getClient();`;
 
         setSetupCode(code);
 
-        // Check if SDK is configured (basic check)
+        // Try to configure the SDK
         try {
-            // @ts-ignore - SDK might not be installed in this demo
-            if (typeof window !== 'undefined' && window.relayClient) {
-                setIsConfigured(true);
-            }
+            // @ts-ignore - Dynamic import for SDK
+            import('@relayprotocol/relay-sdk').then((sdk) => {
+                const { createClient, convertViemChainToRelayChain, MAINNET_RELAY_API } = sdk;
+                // @ts-ignore - Dynamic import for viem
+                import('viem/chains').then((chains) => {
+                    try {
+                        createClient({
+                            baseApiUrl: MAINNET_RELAY_API,
+                            source: "relay-demo.codesandbox.io",
+                            chains: [
+                                convertViemChainToRelayChain(chains.base),
+                                convertViemChainToRelayChain(chains.arbitrum)
+                            ],
+                        });
+                        setIsConfigured(true);
+                        setConfigStatus("SDK configured successfully!");
+                    } catch (e: any) {
+                        setConfigStatus(`Configuration error: ${e.message}`);
+                    }
+                });
+            }).catch(() => {
+                setConfigStatus("SDK not installed. This is a demo showing the setup code.");
+            });
         } catch (e) {
-            // SDK not configured
+            setConfigStatus("SDK not available in this environment.");
         }
     }, []);
+
+    const handleConfigureSDK = async () => {
+        try {
+            // @ts-ignore
+            const sdk = await import('@relayprotocol/relay-sdk');
+            const chains = await import('viem/chains');
+            
+            const { createClient, convertViemChainToRelayChain, MAINNET_RELAY_API } = sdk;
+            
+            createClient({
+                baseApiUrl: MAINNET_RELAY_API,
+                source: "relay-demo.codesandbox.io",
+                chains: [
+                    convertViemChainToRelayChain(chains.base),
+                    convertViemChainToRelayChain(chains.arbitrum)
+                ],
+            });
+            
+            setIsConfigured(true);
+            setConfigStatus("✓ SDK configured successfully!");
+        } catch (e: any) {
+            setConfigStatus(`Error: ${e.message || "SDK not available"}`);
+        }
+    };
 
     return (
         <div style={{ padding: "20px" }}>
@@ -89,20 +133,42 @@ yarn add @relayprotocol/relay-sdk viem`}
             </div>
 
             <div style={{
-                background: isConfigured ? "rgba(74, 222, 128, 0.1)" : "rgba(255, 193, 7, 0.1)",
-                border: `1px solid ${isConfigured ? "rgba(74, 222, 128, 0.3)" : "rgba(255, 193, 7, 0.3)"}`,
-                borderRadius: "8px",
-                padding: "15px",
+                background: "#1a1a1a",
+                borderRadius: "12px",
+                padding: "20px",
                 marginTop: "20px"
             }}>
-                <p style={{ color: isConfigured ? "#4ade80" : "#ffc107", margin: 0 }}>
-                    <strong>{isConfigured ? "✓ SDK Configured" : "⚠ SDK Not Configured"}</strong>
+                <h3 style={{ color: "#e0e0e0", marginTop: 0 }}>Try It</h3>
+                <p style={{ color: "#b0b0b0", marginBottom: "15px" }}>
+                    Click the button below to configure the SDK in this demo:
                 </p>
-                <p style={{ color: "#a0a0a0", fontSize: "0.9rem", marginTop: "10px" }}>
-                    {isConfigured 
-                        ? "The Relay SDK is configured and ready to use."
-                        : "In a real application, you would configure the SDK at the root of your app. For this demo, you can see the configuration code above."}
-                </p>
+                <button
+                    onClick={handleConfigureSDK}
+                    disabled={isConfigured}
+                    style={{
+                        padding: "12px 24px",
+                        background: isConfigured ? "#666" : "#4615C8",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "8px",
+                        fontSize: "1rem",
+                        fontWeight: 600,
+                        cursor: isConfigured ? "not-allowed" : "pointer",
+                        opacity: isConfigured ? 0.6 : 1
+                    }}
+                >
+                    {isConfigured ? "✓ SDK Configured" : "Configure SDK"}
+                </button>
+                {configStatus && (
+                    <p style={{
+                        color: isConfigured ? "#4ade80" : "#fbbf24",
+                        marginTop: "15px",
+                        marginBottom: 0,
+                        fontSize: "0.9rem"
+                    }}>
+                        {configStatus}
+                    </p>
+                )}
             </div>
 
             <div style={{
