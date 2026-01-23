@@ -1,29 +1,18 @@
-# Relay API Demo
+# Relay API Examples
 
-A simple landing page that opens an interactive CodeSandbox demo for testing the Relay API.
+Interactive examples for Relay API integration. All examples are available in CodeSandbox.
 
-## Quick Start
+## 🚀 Quick Start
 
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+**[Open in CodeSandbox →](https://githubbox.com/GiselleNessi/relay-demo)**
 
-2. **Run the development server:**
-   ```bash
-   npm run dev
-   ```
+Click the link above to open this repository in CodeSandbox and explore all the examples interactively.
 
-3. **Open your browser:**
-   - Navigate to `http://localhost:5173`
-   - Click "Open CodeSandbox Demo" to launch the interactive demo
+## Examples
 
-## What's Included
-
-The CodeSandbox demo includes a working example of the Relay API "Get Quote" endpoint, demonstrating how to:
-- Get a quote for cross-chain bridging
-- View formatted quote details (amounts, fees, rates)
-- See the full JSON response
+- **API Examples** - Direct API integration examples using fetch and REST endpoints
+- **SDK Examples** - Examples using Relay SDK and React hooks
+- **More Examples** - Advanced examples and use cases
 
 ## Learn More
 
