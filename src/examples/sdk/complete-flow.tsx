@@ -96,8 +96,7 @@ export function CompleteFlowExample() {
         <div style={{ padding: "20px" }}>
             <h2>Complete SDK Flow</h2>
             <p style={{ color: "#b0b0b0", marginBottom: "20px" }}>
-                This example shows you the complete workflow using the Relay SDK: Get Quote → Execute → Monitor. 
-                <strong style={{ color: "#e0e0e0" }}> The SDK is not installed in this demo</strong>, so we're using the API directly, but showing you how the SDK would simplify this flow.
+                Experience the complete workflow: Get Quote → Execute → Monitor. Follow the steps below to complete a full cross-chain bridge!
             </p>
 
             <div style={{

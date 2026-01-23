@@ -145,8 +145,7 @@ getClient()?.actions.execute({
         <div style={{ padding: "20px" }}>
             <h2>SDK: Execute with Progress Tracking</h2>
             <p style={{ color: "#b0b0b0", marginBottom: "20px" }}>
-                This example shows you how the SDK's <code style={{ background: "#1a1a1a", padding: "2px 6px", borderRadius: "4px" }}>onProgress</code> callback works. 
-                <strong style={{ color: "#e0e0e0" }}> The SDK is not installed in this demo</strong>, so we're simulating the progress updates you would get with the SDK.
+                Execute a transaction and watch real-time progress updates! The SDK's <code style={{ background: "#1a1a1a", padding: "2px 6px", borderRadius: "4px" }}>onProgress</code> callback automatically updates you as the transaction progresses.
             </p>
 
             <div style={{
