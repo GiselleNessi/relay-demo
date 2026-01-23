@@ -1,42 +1,32 @@
-// Complete SDK Flow Example
-// This component demonstrates the complete workflow using the Relay SDK
+// SDK Claim App Fees Example
+// This component demonstrates how to claim app fees using the Relay SDK
 
 import { useState } from "react";
 
-export function CompleteFlowExample() {
+export function ClaimAppFeesExample() {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
 
-    const codeSnippet = `// 1. Get Quote
-const quote = await getClient()?.actions.getQuote({
-  chainId: 8453,
-  toChainId: 42161,
-  currency: "0x0000000000000000000000000000000000000000",
-  toCurrency: "0x0000000000000000000000000000000000000000",
-  amount: "100000000000000",
-  wallet,
-  user: "0x...",
-  recipient: "0x...",
-  tradeType: "EXACT_INPUT"
-});
+    const codeSnippet = `import { getClient } from "@relayprotocol/relay-sdk";
+import { useWalletClient } from "wagmi";
 
-// 2. Execute with progress
-getClient()?.actions.execute({
-  quote,
-  wallet,
-  onProgress: ({ currentStep, txHashes, details }) => {
-    // Update UI
-  }
-});
+const { data: wallet } = useWalletClient();
 
-// 3. Monitor (automatic via SDK, or use status endpoint)
-// The SDK handles monitoring internally`;
+const { data } = await getClient().actions.claimAppFees({
+  wallet,
+  chainId: 8453, // Base
+  currency: "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913", // USDC
+  recipient: "0x...", // Optional
+  amount: "10000000", // Optional (10 USDC)
+  onProgress: ({steps, fees, breakdown, currentStep, currentStepItem, txHashes, details}) => {
+    // custom handling
+  },
+});`;
 
     const handleRun = async () => {
-        const address = prompt("Enter your wallet address (0x...):");
-        if (!address || !address.startsWith("0x") || address.length !== 42) {
-            setError("Please enter a valid wallet address");
+        if (typeof window.ethereum === "undefined") {
+            setError("No wallet detected. Please install MetaMask or another Web3 wallet.");
             return;
         }
 
@@ -45,39 +35,27 @@ getClient()?.actions.execute({
         setResult(null);
 
         try {
-            // Step 1: Get Quote
-            const quoteResponse = await fetch("https://api.relay.link/quote/v2", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    user: address,
-                    originChainId: 8453,
-                    destinationChainId: 42161,
-                    originCurrency: "0x0000000000000000000000000000000000000000",
-                    destinationCurrency: "0x0000000000000000000000000000000000000000",
-                    amount: "100000000000000",
-                    tradeType: "EXACT_INPUT"
-                }),
-            });
+            const provider = window.ethereum;
+            await provider.request({ method: "eth_requestAccounts" });
+            const accounts = await provider.request({ method: "eth_accounts" });
+            const userAddress = accounts[0];
 
-            if (!quoteResponse.ok) throw new Error("Failed to get quote");
-            const quote = await quoteResponse.json();
-            localStorage.setItem("relayQuoteResponse", JSON.stringify(quote));
+            // Get chain ID
+            const chainId = await provider.request({ method: "eth_chainId" });
+            const currentChainId = parseInt(chainId as string, 16);
 
+            // For this demo, we'll show what the SDK call would do
+            // In a real app with SDK installed, you would use:
+            // const { data } = await getClient().actions.claimAppFees({...});
+            
             setResult({
-                step: "quote",
-                quote: {
-                    operation: quote.details?.operation,
-                    youSend: quote.details?.currencyIn?.amountFormatted,
-                    youReceive: quote.details?.currencyOut?.amountFormatted,
-                    requestId: quote.steps?.[0]?.requestId
-                }
+                message: "claimAppFees would be called with your wallet",
+                wallet: userAddress,
+                chainId: currentChainId,
+                note: "In a real app with SDK installed, this would claim your app fees. The SDK handles the transaction execution automatically."
             });
-
-            // Note: In a real SDK implementation, execute and monitor would happen automatically
-            // For this demo, we just show the quote result
         } catch (err: any) {
-            setError(err.message);
+            setError(err.message || "Failed to connect wallet");
         } finally {
             setLoading(false);
         }
@@ -85,10 +63,22 @@ getClient()?.actions.execute({
 
     return (
         <div style={{ padding: "20px" }}>
-            <h2>Complete SDK Flow</h2>
+            <h2>SDK: Claim App Fees</h2>
             <p style={{ color: "#b0b0b0", marginBottom: "20px" }}>
-                Code snippet showing the complete workflow: Get Quote → Execute → Monitor using the Relay SDK.
+                Code snippet showing how to claim app fees for a wallet using the Relay SDK.
             </p>
+
+            <div style={{
+                background: "rgba(70, 21, 200, 0.1)",
+                border: "1px solid rgba(70, 21, 200, 0.3)",
+                borderRadius: "8px",
+                padding: "15px",
+                marginBottom: "20px"
+            }}>
+                <p style={{ color: "#b0b0b0", margin: 0, fontSize: "0.9rem" }}>
+                    <strong style={{ color: "#4615C8" }}>What are app fees?</strong> App fees allow you to monetize your integration by adding a fee (in bps) to every quote. Revenue is collected automatically in USDC. Use this method to claim those fees.
+                </p>
+            </div>
 
             <div style={{
                 background: "#1a1a1a",
@@ -154,22 +144,21 @@ getClient()?.actions.execute({
                         marginBottom: "20px"
                     }}>
                         <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                            <span style={{ color: "#a0a0a0" }}>Operation:</span>
-                            <span style={{ color: "#e0e0e0", fontWeight: 600 }}>
-                                {result.quote.operation || "N/A"}
+                            <span style={{ color: "#a0a0a0" }}>Wallet:</span>
+                            <span style={{ color: "#e0e0e0", fontFamily: "monospace", fontSize: "0.85rem", wordBreak: "break-all" }}>
+                                {result.wallet}
                             </span>
                         </div>
                         <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                            <span style={{ color: "#a0a0a0" }}>You Send:</span>
+                            <span style={{ color: "#a0a0a0" }}>Chain ID:</span>
                             <span style={{ color: "#e0e0e0", fontWeight: 600 }}>
-                                {result.quote.youSend || "0"} ETH
+                                {result.chainId}
                             </span>
                         </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0" }}>
-                            <span style={{ color: "#a0a0a0" }}>You Receive:</span>
-                            <span style={{ color: "#e0e0e0", fontWeight: 600 }}>
-                                {result.quote.youReceive || "0"} ETH
-                            </span>
+                        <div style={{ padding: "10px 0" }}>
+                            <p style={{ color: "#a0a0a0", margin: 0, fontSize: "0.9rem" }}>
+                                {result.note}
+                            </p>
                         </div>
                     </div>
                 </div>
