@@ -308,9 +308,66 @@ function App() {
                                 <div
                                     key={example.id}
                                     className={`example-card ${example.disabled ? "disabled" : ""}`}
+                                    onClick={() => handleExampleClick(example)}
+                                    style={{
+                                        cursor: example.disabled ? "not-allowed" : "pointer",
+                                        position: "relative",
+                                        transition: "all 0.2s ease"
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (!example.disabled) {
+                                            e.currentTarget.style.transform = "translateY(-2px)";
+                                            e.currentTarget.style.boxShadow = "0 4px 12px rgba(70, 21, 200, 0.3)";
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (!example.disabled) {
+                                            e.currentTarget.style.transform = "translateY(0)";
+                                            e.currentTarget.style.boxShadow = "none";
+                                        }
+                                    }}
                                 >
+                                    {example.stepNumber && (
+                                        <div style={{
+                                            position: "absolute",
+                                            top: "15px",
+                                            right: "15px",
+                                            width: "30px",
+                                            height: "30px",
+                                            borderRadius: "50%",
+                                            background: "#4615C8",
+                                            color: "white",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            fontWeight: "bold",
+                                            fontSize: "0.9rem"
+                                        }}>
+                                            {example.stepNumber}
+                                        </div>
+                                    )}
                                     <h3>{example.title}</h3>
                                     <p>{example.description}</p>
+                                    {example.file && (
+                                        <p style={{ fontSize: "0.85rem", color: "#888", marginTop: "10px" }}>
+                                            File: <code>{example.file}</code>
+                                        </p>
+                                    )}
+                                    {!example.disabled && (
+                                        <div style={{
+                                            marginTop: "15px",
+                                            padding: "8px 16px",
+                                            background: "rgba(70, 21, 200, 0.2)",
+                                            border: "1px solid rgba(70, 21, 200, 0.4)",
+                                            borderRadius: "6px",
+                                            color: "#4615C8",
+                                            fontSize: "0.9rem",
+                                            fontWeight: 600,
+                                            textAlign: "center"
+                                        }}>
+                                            Click to Try →
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
