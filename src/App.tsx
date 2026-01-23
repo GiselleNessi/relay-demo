@@ -1,4 +1,8 @@
+import { useState } from "react";
 import "./App.css";
+import { GetQuoteExample } from "./examples/api/get-quote";
+import { ExecuteExample } from "./examples/api/execute";
+import { MonitorExample } from "./examples/api/monitor";
 
 // This is the app that runs in CodeSandbox
 // It shows all available examples organized by category
@@ -7,18 +11,37 @@ interface Example {
     id: string;
     title: string;
     description: string;
-    file?: string; // Path to example file
+    component?: React.ComponentType<any>;
+    file?: string;
     disabled?: boolean;
 }
 
 function App() {
+    const [selectedExample, setSelectedExample] = useState<Example | null>(null);
+    const [quoteResponse, setQuoteResponse] = useState<any>(null);
+
     const examples: { api: Example[]; sdk: Example[]; more: Example[] } = {
         api: [
             {
                 id: "get-quote",
-                title: "Get Quote",
+                title: "Step 2: Get Quote",
                 description: "Get a quote for cross-chain bridging using the Relay API",
+                component: GetQuoteExample,
                 file: "src/examples/api/get-quote.tsx"
+            },
+            {
+                id: "execute",
+                title: "Step 3: Execute",
+                description: "Execute a transaction from a quote response",
+                component: ExecuteExample,
+                file: "src/examples/api/execute.tsx"
+            },
+            {
+                id: "monitor",
+                title: "Step 4: Monitor",
+                description: "Monitor transaction status using the requestId",
+                component: MonitorExample,
+                file: "src/examples/api/monitor.tsx"
             }
         ],
         sdk: [
@@ -39,6 +62,43 @@ function App() {
         ]
     };
 
+    const handleExampleClick = (example: Example) => {
+        if (example.disabled || !example.component) return;
+        setSelectedExample(example);
+    };
+
+    const handleBack = () => {
+        setSelectedExample(null);
+    };
+
+    // If an example is selected, show it
+    if (selectedExample && selectedExample.component) {
+        const Component = selectedExample.component;
+        return (
+            <div className="app-container">
+                <div className="card" style={{ maxWidth: "900px" }}>
+                    <button
+                        onClick={handleBack}
+                        style={{
+                            marginBottom: "20px",
+                            padding: "10px 20px",
+                            background: "#1a1a1a",
+                            border: "1px solid rgba(255, 255, 255, 0.1)",
+                            borderRadius: "8px",
+                            color: "#e0e0e0",
+                            cursor: "pointer",
+                            fontSize: "0.9rem"
+                        }}
+                    >
+                        ← Back to Examples
+                    </button>
+                    <Component quoteResponse={quoteResponse} requestId={quoteResponse?.steps?.[0]?.requestId} />
+                </div>
+            </div>
+        );
+    }
+
+    // Show examples list
     return (
         <div className="app-container">
             <div className="card">
@@ -54,13 +114,17 @@ function App() {
                     <div className="example-category">
                         <h2 className="category-title">API Examples</h2>
                         <p className="category-description">
-                            Direct API integration examples using fetch and REST endpoints
+                            Follow the Relay API Quickstart guide step by step
                         </p>
                         <div className="examples-list">
                             {examples.api.map((example) => (
                                 <div
                                     key={example.id}
                                     className={`example-card ${example.disabled ? "disabled" : ""}`}
+                                    onClick={() => handleExampleClick(example)}
+                                    style={{
+                                        cursor: example.disabled ? "not-allowed" : "pointer"
+                                    }}
                                 >
                                     <h3>{example.title}</h3>
                                     <p>{example.description}</p>

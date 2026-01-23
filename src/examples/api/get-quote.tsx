@@ -1,7 +1,7 @@
-// Get Quote Example - API Example
+// Get Quote Example - Step 2 from Relay API Quickstart
 // This component demonstrates how to get a quote from Relay API
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const RELAY_API_URL = "https://api.relay.link";
 
@@ -53,6 +53,8 @@ export function GetQuoteExample() {
 
             const data = await response.json();
             setQuoteResponse(data);
+            // Store in localStorage so Execute example can access it
+            localStorage.setItem("relayQuoteResponse", JSON.stringify(data));
             console.log("Quote received:", data);
         } catch (err: any) {
             setError(err.message);
@@ -64,8 +66,8 @@ export function GetQuoteExample() {
 
     return (
         <div style={{ padding: "20px" }}>
-            <h2>Get Quote Example</h2>
-            <p>Get a quote for cross-chain bridging using the Relay API</p>
+            <h2>Step 2: Get Quote</h2>
+            <p>Every action in Relay starts with a Quote. The quote endpoint handles all of your use cases, whether it's a bridge, swap, or cross-chain call.</p>
 
             <div style={{ marginBottom: "20px" }}>
                 <label style={{ display: "block", marginBottom: "5px", color: "#b0b0b0" }}>
