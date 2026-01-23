@@ -28,60 +28,26 @@ import { getClient } from '@relayprotocol/relay-sdk';
 const client = getClient();`;
 
         setSetupCode(code);
-
-        // Try to configure the SDK
-        try {
-            // @ts-ignore - Dynamic import for SDK
-            import('@relayprotocol/relay-sdk').then((sdk) => {
-                const { createClient, convertViemChainToRelayChain, MAINNET_RELAY_API } = sdk;
-                // @ts-ignore - Dynamic import for viem
-                import('viem/chains').then((chains) => {
-                    try {
-                        createClient({
-                            baseApiUrl: MAINNET_RELAY_API,
-                            source: "relay-demo.codesandbox.io",
-                            chains: [
-                                convertViemChainToRelayChain(chains.base),
-                                convertViemChainToRelayChain(chains.arbitrum)
-                            ],
-                        });
-                        setIsConfigured(true);
-                        setConfigStatus("SDK configured successfully!");
-                    } catch (e: any) {
-                        setConfigStatus(`Configuration error: ${e.message}`);
-                    }
-                });
-            }).catch(() => {
-                setConfigStatus("SDK not installed. This is a demo showing the setup code.");
-            });
-        } catch (e) {
-            setConfigStatus("SDK not available in this environment.");
-        }
+        setConfigStatus("SDK not installed. Install with: npm install @relayprotocol/relay-sdk viem");
     }, []);
 
     const handleConfigureSDK = async () => {
-        try {
-            // Try to dynamically import SDK (will fail if not installed)
-            // @ts-ignore
-            const sdk = await import('@relayprotocol/relay-sdk');
-            const chains = await import('viem/chains');
-            
-            const { createClient, convertViemChainToRelayChain, MAINNET_RELAY_API } = sdk;
-            
-            createClient({
-                baseApiUrl: MAINNET_RELAY_API,
-                source: "relay-demo.codesandbox.io",
-                chains: [
-                    convertViemChainToRelayChain(chains.base),
-                    convertViemChainToRelayChain(chains.arbitrum)
-                ],
-            });
-            
-            setIsConfigured(true);
-            setConfigStatus("✓ SDK configured successfully!");
-        } catch (e: any) {
-            setConfigStatus(`SDK not installed. To use the SDK, run: npm install @relayprotocol/relay-sdk viem`);
-        }
+        // SDK is not installed in this demo
+        // This button demonstrates what would happen if SDK was installed
+        setConfigStatus("SDK not installed. To use the SDK in your project, run: npm install @relayprotocol/relay-sdk viem");
+        
+        // In a real app with SDK installed, you would do:
+        // import { createClient, convertViemChainToRelayChain, MAINNET_RELAY_API } from '@relayprotocol/relay-sdk';
+        // import { base, arbitrum } from 'viem/chains';
+        // 
+        // createClient({
+        //   baseApiUrl: MAINNET_RELAY_API,
+        //   source: "your-app.com",
+        //   chains: [
+        //     convertViemChainToRelayChain(base),
+        //     convertViemChainToRelayChain(arbitrum)
+        //   ],
+        // });
     };
 
     return (
@@ -141,7 +107,7 @@ yarn add @relayprotocol/relay-sdk viem`}
             }}>
                 <h3 style={{ color: "#e0e0e0", marginTop: 0 }}>Try It</h3>
                 <p style={{ color: "#b0b0b0", marginBottom: "15px" }}>
-                    Click the button below to configure the SDK in this demo:
+                    Click the button below to see what happens when configuring the SDK:
                 </p>
                 <button
                     onClick={handleConfigureSDK}

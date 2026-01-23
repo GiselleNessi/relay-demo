@@ -52,21 +52,11 @@ getClient()?.actions.execute({
         setSdkCode(code);
         setProgressSteps([]);
 
-        // Try to use SDK, fallback to manual execution
-        try {
-            // @ts-ignore
-            const sdk = await import('@relayprotocol/relay-sdk');
-            const { getClient } = sdk;
-            const client = getClient();
-            
-            if (client && typeof window.ethereum !== 'undefined') {
-                // SDK is available - in a real app with wagmi, you'd use it here
-                // For now, we'll simulate the onProgress callback
-                setUsingSDK(true);
-            }
-        } catch (e) {
-            setUsingSDK(false);
-        }
+        // Note: SDK is not installed in this demo
+        // In a real app with SDK installed, you would use:
+        // getClient()?.actions.execute({ quote, wallet, onProgress: ... });
+        // For this demo, we simulate the onProgress callback behavior
+        setUsingSDK(false);
 
         try {
             const provider = window.ethereum;

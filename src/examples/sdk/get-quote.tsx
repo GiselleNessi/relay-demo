@@ -57,25 +57,11 @@ const quote = await getClient()?.actions.getQuote({
 });`;
         setSdkCode(code);
 
-        // Try to use SDK, fallback to API
-        // Note: SDK is not installed in this demo, so we'll use API
+        // Note: SDK is not installed in this demo
         // In a real app with SDK installed, you would use:
         // const quote = await getClient()?.actions.getQuote({...});
-        try {
-            // @ts-ignore
-            const sdk = await import('@relayprotocol/relay-sdk');
-            const { getClient } = sdk;
-            const client = getClient();
-            
-            if (client) {
-                setUsingSDK(true);
-                // SDK is available - in a real app you'd use it here
-                // For this demo, we'll still use API to show it works
-            }
-        } catch (sdkError) {
-            // SDK not installed - use API fallback
-            setUsingSDK(false);
-        }
+        // For this demo, we use the API directly to show the functionality
+        setUsingSDK(false);
 
         // Use API as fallback (or if SDK not available)
         try {
