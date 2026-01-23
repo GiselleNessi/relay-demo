@@ -144,7 +144,10 @@ getClient()?.actions.execute({
     return (
         <div style={{ padding: "20px" }}>
             <h2>SDK: Execute with Progress Tracking</h2>
-            <p>Execute a quote with real-time progress updates using the SDK's onProgress callback.</p>
+            <p style={{ color: "#b0b0b0", marginBottom: "20px" }}>
+                This example shows you how the SDK's <code style={{ background: "#1a1a1a", padding: "2px 6px", borderRadius: "4px" }}>onProgress</code> callback works. 
+                <strong style={{ color: "#e0e0e0" }}> The SDK is not installed in this demo</strong>, so we're simulating the progress updates you would get with the SDK.
+            </p>
 
             <div style={{
                 background: "rgba(70, 21, 200, 0.1)",
@@ -154,8 +157,8 @@ getClient()?.actions.execute({
                 marginBottom: "20px"
             }}>
                 <p style={{ color: "#b0b0b0", margin: 0, fontSize: "0.9rem" }}>
-                    <strong style={{ color: "#4615C8" }}>SDK Advantage:</strong> The SDK provides real-time progress updates through the onProgress callback, making it easy to show users what's happening.
-                    {usingSDK && <span style={{ color: "#4ade80", marginLeft: "10px" }}>✓ SDK Available</span>}
+                    <strong style={{ color: "#4615C8" }}>SDK Advantage:</strong> The SDK provides real-time progress updates through the <code style={{ background: "#1a1a1a", padding: "2px 6px", borderRadius: "4px" }}>onProgress</code> callback. 
+                    Instead of manually polling for status, the SDK calls your callback function automatically as the transaction progresses.
                 </p>
             </div>
 

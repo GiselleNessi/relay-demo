@@ -101,7 +101,10 @@ const quote = await getClient()?.actions.getQuote({
     return (
         <div style={{ padding: "20px" }}>
             <h2>SDK: Get Quote (Native Bridge)</h2>
-            <p>Use the Relay SDK to get a quote for bridging ETH from one chain to another.</p>
+            <p style={{ color: "#b0b0b0", marginBottom: "20px" }}>
+                This example shows you how to use the Relay SDK to get a quote. 
+                <strong style={{ color: "#e0e0e0" }}> The SDK is not installed in this demo</strong>, so we're using the API directly, but showing you the SDK code you would write.
+            </p>
 
             <div style={{
                 background: "rgba(70, 21, 200, 0.1)",
@@ -111,9 +114,18 @@ const quote = await getClient()?.actions.getQuote({
                 marginBottom: "20px"
             }}>
                 <p style={{ color: "#b0b0b0", margin: 0, fontSize: "0.9rem" }}>
-                    <strong style={{ color: "#4615C8" }}>SDK Advantage:</strong> The SDK provides a cleaner API with built-in wallet integration and type safety.
-                    {usingSDK && <span style={{ color: "#4ade80", marginLeft: "10px" }}>✓ Using SDK</span>}
+                    <strong style={{ color: "#4615C8" }}>SDK vs API:</strong> 
                 </p>
+                <div style={{ marginTop: "10px", color: "#a0a0a0", fontSize: "0.9rem" }}>
+                    <p style={{ margin: "5px 0" }}><strong style={{ color: "#e0e0e0" }}>With API (what you see in API examples):</strong></p>
+                    <code style={{ background: "#0D0C0D", padding: "5px 10px", borderRadius: "4px", display: "block", marginBottom: "10px" }}>
+                        fetch('https://api.relay.link/quote/v2', {'{'} method: 'POST', body: JSON.stringify(...) {'}'})
+                    </code>
+                    <p style={{ margin: "5px 0" }}><strong style={{ color: "#e0e0e0" }}>With SDK (what this example shows):</strong></p>
+                    <code style={{ background: "#0D0C0D", padding: "5px 10px", borderRadius: "4px", display: "block" }}>
+                        await getClient()?.actions.getQuote({'{'} chainId, toChainId, amount, wallet, ... {'}'})
+                    </code>
+                </div>
             </div>
 
             <div style={{ marginBottom: "20px" }}>

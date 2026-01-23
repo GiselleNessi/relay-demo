@@ -95,7 +95,10 @@ export function CompleteFlowExample() {
     return (
         <div style={{ padding: "20px" }}>
             <h2>Complete SDK Flow</h2>
-            <p>Complete workflow: Get Quote → Execute → Monitor using the Relay SDK.</p>
+            <p style={{ color: "#b0b0b0", marginBottom: "20px" }}>
+                This example shows you the complete workflow using the Relay SDK: Get Quote → Execute → Monitor. 
+                <strong style={{ color: "#e0e0e0" }}> The SDK is not installed in this demo</strong>, so we're using the API directly, but showing you how the SDK would simplify this flow.
+            </p>
 
             <div style={{
                 background: "rgba(70, 21, 200, 0.1)",
@@ -105,7 +108,8 @@ export function CompleteFlowExample() {
                 marginBottom: "30px"
             }}>
                 <p style={{ color: "#b0b0b0", margin: 0, fontSize: "0.9rem" }}>
-                    <strong style={{ color: "#4615C8" }}>SDK Advantage:</strong> The SDK provides a seamless flow from quote to execution to monitoring, all with a clean API.
+                    <strong style={{ color: "#4615C8" }}>SDK Advantage:</strong> The SDK provides a seamless flow from quote to execution to monitoring, all with a clean API. 
+                    You don't need to manually handle API calls, transaction signing, or status polling - the SDK handles it all.
                 </p>
             </div>
 
