@@ -15,5 +15,6 @@
         "embedOnPreview": true
       }
     }
-  }
+  },
+  "ports": [5173]
 }
