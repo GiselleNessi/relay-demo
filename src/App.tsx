@@ -1,4 +1,3 @@
-import { useState } from "react";
 import "./App.css";
 
 // This is the app that runs in CodeSandbox
