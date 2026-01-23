@@ -3,7 +3,7 @@ import "./App.css";
 import { GetQuoteExample } from "./examples/api/get-quote";
 import { ExecuteExample } from "./examples/api/execute";
 import { MonitorExample } from "./examples/api/monitor";
-import { GetQuoteSDKExample, ExecuteProgressExample, GetAppFeesExample, ClaimAppFeesExample } from "./examples/sdk";
+import { GetQuoteSDKExample, ExecuteProgressExample } from "./examples/sdk";
 
 // This is the app that runs in CodeSandbox
 // It shows all available examples organized by category
@@ -63,20 +63,6 @@ function App() {
                 description: "Execute with real-time progress updates using onProgress",
                 component: ExecuteProgressExample,
                 file: "src/examples/sdk/execute-progress.tsx"
-            },
-            {
-                id: "get-app-fees",
-                title: "Get App Fees",
-                description: "Retrieve app fee balances for a specific wallet",
-                component: GetAppFeesExample,
-                file: "src/examples/sdk/get-app-fees.tsx"
-            },
-            {
-                id: "claim-app-fees",
-                title: "Claim App Fees",
-                description: "Claim app fees for a wallet using the SDK",
-                component: ClaimAppFeesExample,
-                file: "src/examples/sdk/claim-app-fees.tsx"
             }
             ]
     };
