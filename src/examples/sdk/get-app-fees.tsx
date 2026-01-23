@@ -4,6 +4,7 @@
 import { useState } from "react";
 
 export function GetAppFeesExample() {
+    const [walletAddress, setWalletAddress] = useState("");
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
@@ -17,9 +18,8 @@ const balances = await getClient().actions.getAppFees({
 });`;
 
     const handleRun = async () => {
-        const address = prompt("Enter wallet address to check app fee balances (0x...):");
-        if (!address || !address.startsWith("0x") || address.length !== 42) {
-            setError("Please enter a valid wallet address");
+        if (!walletAddress || !walletAddress.startsWith("0x") || walletAddress.length !== 42) {
+            setError("Please enter a valid wallet address (0x...)");
             return;
         }
 
@@ -36,7 +36,7 @@ const balances = await getClient().actions.getAppFees({
             // So we'll simulate the response structure
             
             setResult({
-                wallet: address,
+                wallet: walletAddress,
                 message: "In a real app with SDK installed, this would fetch app fee balances.",
                 note: "App fees are collected automatically when you add a fee (in bps) to quotes. Use getAppFees to check your balance, then use claimAppFees to withdraw them."
             });
@@ -85,6 +85,30 @@ const balances = await getClient().actions.getAppFees({
                 }}>
                     {codeSnippet}
                 </pre>
+            </div>
+
+            <div style={{ marginBottom: "20px" }}>
+                <label style={{ display: "block", marginBottom: "5px", color: "#b0b0b0" }}>
+                    Wallet Address:
+                </label>
+                <input
+                    type="text"
+                    value={walletAddress}
+                    onChange={(e) => setWalletAddress(e.target.value.trim())}
+                    placeholder="0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+                    style={{
+                        width: "100%",
+                        padding: "12px",
+                        background: "#1a1a1a",
+                        border: `1px solid ${!walletAddress || walletAddress.length !== 42 
+                            ? "rgba(255, 107, 107, 0.5)" 
+                            : "rgba(255, 255, 255, 0.1)"}`,
+                        borderRadius: "8px",
+                        color: "#e0e0e0",
+                        fontSize: "1rem",
+                        boxSizing: "border-box"
+                    }}
+                />
             </div>
 
             <button

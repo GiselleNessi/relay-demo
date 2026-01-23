@@ -1,9 +1,10 @@
 // SDK Get Quote Example - Native Bridge
 // This component demonstrates how to use the Relay SDK to get a quote
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function GetQuoteSDKExample() {
+    const [walletAddress, setWalletAddress] = useState("");
     const [loading, setLoading] = useState(false);
     const [quoteResponse, setQuoteResponse] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
@@ -25,27 +26,24 @@ const quote = await getClient()?.actions.getQuote({
   tradeType: "EXACT_INPUT"
 });`;
 
-    const handleRun = async () => {
-        // Get user address from localStorage or prompt
+    // Try to get address from localStorage
+    useEffect(() => {
         const storedQuote = localStorage.getItem("relayQuoteResponse");
-        let userAddress = "";
-        
         if (storedQuote) {
             try {
                 const quote = JSON.parse(storedQuote);
-                userAddress = quote.steps?.[0]?.items?.[0]?.data?.from || "";
+                const address = quote.steps?.[0]?.items?.[0]?.data?.from || "";
+                if (address) setWalletAddress(address);
             } catch (e) {
                 // Ignore
             }
         }
+    }, []);
 
-        if (!userAddress) {
-            const address = prompt("Enter your wallet address (0x...):");
-            if (!address || !address.startsWith("0x") || address.length !== 42) {
-                setError("Please enter a valid wallet address");
-                return;
-            }
-            userAddress = address;
+    const handleRun = async () => {
+        if (!walletAddress || !walletAddress.startsWith("0x") || walletAddress.length !== 42) {
+            setError("Please enter a valid wallet address (0x...)");
+            return;
         }
 
         setLoading(true);
@@ -59,7 +57,7 @@ const quote = await getClient()?.actions.getQuote({
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    user: userAddress,
+                    user: walletAddress,
                     originChainId: 8453,
                     destinationChainId: 42161,
                     originCurrency: "0x0000000000000000000000000000000000000000",
@@ -110,6 +108,30 @@ const quote = await getClient()?.actions.getQuote({
                 }}>
                     {codeSnippet}
                 </pre>
+            </div>
+
+            <div style={{ marginBottom: "20px" }}>
+                <label style={{ display: "block", marginBottom: "5px", color: "#b0b0b0" }}>
+                    Wallet Address:
+                </label>
+                <input
+                    type="text"
+                    value={walletAddress}
+                    onChange={(e) => setWalletAddress(e.target.value.trim())}
+                    placeholder="0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+                    style={{
+                        width: "100%",
+                        padding: "12px",
+                        background: "#1a1a1a",
+                        border: `1px solid ${!walletAddress || walletAddress.length !== 42 
+                            ? "rgba(255, 107, 107, 0.5)" 
+                            : "rgba(255, 255, 255, 0.1)"}`,
+                        borderRadius: "8px",
+                        color: "#e0e0e0",
+                        fontSize: "1rem",
+                        boxSizing: "border-box"
+                    }}
+                />
             </div>
 
             <button
