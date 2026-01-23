@@ -3,6 +3,7 @@ import "./App.css";
 import { GetQuoteExample } from "./examples/api/get-quote";
 import { ExecuteExample } from "./examples/api/execute";
 import { MonitorExample } from "./examples/api/monitor";
+import { SetupExample, GetQuoteSDKExample, ExecuteProgressExample, CompleteFlowExample } from "./examples/sdk";
 
 // This is the app that runs in CodeSandbox
 // It shows all available examples organized by category
@@ -50,10 +51,35 @@ function App() {
         ],
         sdk: [
             {
-                id: "coming-soon",
-                title: "SDK Examples",
-                description: "SDK examples coming soon",
-                disabled: true
+                id: "setup",
+                title: "Setup & Configuration",
+                description: "Configure the Relay SDK in your application",
+                stepNumber: 1,
+                component: SetupExample,
+                file: "src/examples/sdk/setup.tsx"
+            },
+            {
+                id: "get-quote-sdk",
+                title: "Get Quote (SDK)",
+                description: "Use the SDK to get a quote for cross-chain bridging",
+                stepNumber: 2,
+                component: GetQuoteSDKExample,
+                file: "src/examples/sdk/get-quote.tsx"
+            },
+            {
+                id: "execute-progress",
+                title: "Execute with Progress",
+                description: "Execute with real-time progress updates using onProgress",
+                stepNumber: 3,
+                component: ExecuteProgressExample,
+                file: "src/examples/sdk/execute-progress.tsx"
+            },
+            {
+                id: "complete-flow",
+                title: "Complete SDK Flow",
+                description: "Full workflow: Quote → Execute → Monitor using SDK",
+                component: CompleteFlowExample,
+                file: "src/examples/sdk/complete-flow.tsx"
             }
         ],
         more: [
