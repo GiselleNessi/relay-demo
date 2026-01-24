@@ -61,17 +61,12 @@ const quote = await getClient()?.actions.getQuote({
         }
     }, [isConnected, address, walletAddress]);
 
-    const handleConnectWallet = async () => {
-        try {
-            await login();
-        } catch (err: any) {
-            setError(err.message || "Failed to connect wallet");
-        }
-    };
-
     const handleRun = async () => {
-        if (!walletAddress || !walletAddress.startsWith("0x") || walletAddress.length !== 42) {
-            setError("Please connect a wallet or enter a valid wallet address (0x...)");
+        // Use connected wallet address if available, otherwise use manual input
+        const addressToUse = (isConnected && address) ? address : walletAddress;
+        
+        if (!addressToUse || !addressToUse.startsWith("0x") || addressToUse.length !== 42) {
+            setError("Please connect a wallet at the top of the page or enter a valid wallet address (0x...)");
             return;
         }
 
@@ -97,8 +92,8 @@ const quote = await getClient()?.actions.getQuote({
                             toCurrency: "0x0000000000000000000000000000000000000000",
                             amount: "100000000000000",
                             wallet,
-                            user: walletAddress,
-                            recipient: walletAddress,
+                            user: addressToUse,
+                            recipient: addressToUse,
                             tradeType: "EXACT_INPUT"
                         });
                         data = quote;
@@ -119,7 +114,7 @@ const quote = await getClient()?.actions.getQuote({
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        user: walletAddress,
+                        user: addressToUse,
                         originChainId: 8453,
                         destinationChainId: 42161,
                         originCurrency: "0x0000000000000000000000000000000000000000",
@@ -188,46 +183,44 @@ const quote = await getClient()?.actions.getQuote({
                 </div>
             )}
 
+            {isConnected && address && (
+                <div style={{
+                    padding: "12px",
+                    background: "rgba(70, 21, 200, 0.1)",
+                    border: "1px solid rgba(70, 21, 200, 0.3)",
+                    borderRadius: "8px",
+                    marginBottom: "20px",
+                    fontSize: "0.9rem",
+                    color: "#e0e0e0"
+                }}>
+                    ✓ Using connected wallet: <code style={{ color: "#4615C8" }}>{address.slice(0, 6)}...{address.slice(-4)}</code>
+                </div>
+            )}
+
+            {!isConnected && (
+                <div style={{
+                    padding: "15px",
+                    background: "rgba(255, 107, 107, 0.1)",
+                    border: "1px solid rgba(255, 107, 107, 0.3)",
+                    borderRadius: "8px",
+                    color: "#ff6b6b",
+                    marginBottom: "20px",
+                    fontSize: "0.9rem"
+                }}>
+                    Please connect your wallet at the top of the page to use this example.
+                </div>
+            )}
+
             <div style={{ marginBottom: "20px" }}>
-                {!isConnected ? (
-                    <button
-                        onClick={handleConnectWallet}
-                        style={{
-                            width: "100%",
-                            padding: "12px 20px",
-                            background: "#4615C8",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "8px",
-                            cursor: "pointer",
-                            fontSize: "1rem",
-                            fontWeight: 600,
-                            marginBottom: "15px"
-                        }}
-                    >
-                        Connect Wallet
-                    </button>
-                ) : (
-                    <div style={{
-                        padding: "12px",
-                        background: "rgba(70, 21, 200, 0.1)",
-                        border: "1px solid rgba(70, 21, 200, 0.3)",
-                        borderRadius: "8px",
-                        marginBottom: "15px",
-                        fontSize: "0.9rem",
-                        color: "#e0e0e0"
-                    }}>
-                        ✓ Connected: <code style={{ color: "#4615C8" }}>{address?.slice(0, 6)}...{address?.slice(-4)}</code>
-                    </div>
-                )}
                 <label style={{ display: "block", marginBottom: "5px", color: "#b0b0b0" }}>
-                    Wallet Address:
+                    Wallet Address {isConnected && address ? "(using connected wallet)" : "(optional override)"}:
                 </label>
                 <input
                     type="text"
                     value={walletAddress}
                     onChange={(e) => setWalletAddress(e.target.value.trim())}
-                    placeholder="0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+                    placeholder={address || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"}
+                    disabled={isConnected && !!address}
                     style={{
                         width: "100%",
                         padding: "12px",
@@ -238,9 +231,16 @@ const quote = await getClient()?.actions.getQuote({
                         borderRadius: "8px",
                         color: "#e0e0e0",
                         fontSize: "1rem",
-                        boxSizing: "border-box"
+                        boxSizing: "border-box",
+                        opacity: isConnected && !!address ? 0.6 : 1,
+                        cursor: isConnected && !!address ? "not-allowed" : "text"
                     }}
                 />
+                {isConnected && address && (
+                    <p style={{ color: "#a0a0a0", fontSize: "0.85rem", marginTop: "5px", marginBottom: 0 }}>
+                        Using your connected wallet. You can override by entering a different address.
+                    </p>
+                )}
             </div>
 
             <button

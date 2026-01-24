@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { usePrivy, useWallets } from '@privy-io/react-auth';
 import "./App.css";
 import { GetQuoteExample } from "./examples/api/get-quote";
 import { ExecuteExample } from "./examples/api/execute";
@@ -19,6 +20,8 @@ interface Example {
 }
 
 function App() {
+    const { ready, authenticated, login, logout, user } = usePrivy();
+    const { wallets } = useWallets();
     const [selectedExample, setSelectedExample] = useState<Example | null>(null);
     const [quoteResponse, setQuoteResponse] = useState<any>(null);
 

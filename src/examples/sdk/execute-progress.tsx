@@ -186,45 +186,39 @@ getClient()?.actions.execute({
                 </pre>
             </div>
 
-            {!isConnected ? (
-                <button
-                    onClick={login}
-                    style={{
-                        width: "100%",
-                        padding: "15px 30px",
-                        background: "#4615C8",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "10px",
-                        fontSize: "1.1rem",
-                        fontWeight: 600,
-                        cursor: "pointer",
-                        marginBottom: "20px"
-                    }}
-                >
-                    Connect Wallet
-                </button>
-            ) : (
-                <button
-                    onClick={handleRun}
-                    disabled={loading}
-                    style={{
-                        width: "100%",
-                        padding: "15px 30px",
-                        background: "#4615C8",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "10px",
-                        fontSize: "1.1rem",
-                        fontWeight: 600,
-                        cursor: loading ? "not-allowed" : "pointer",
-                        opacity: loading ? 0.6 : 1,
-                        marginBottom: "20px"
-                    }}
-                >
-                    {loading ? "Running..." : "Run Example"}
-                </button>
+            {!isConnected && (
+                <div style={{
+                    padding: "15px",
+                    background: "rgba(255, 107, 107, 0.1)",
+                    border: "1px solid rgba(255, 107, 107, 0.3)",
+                    borderRadius: "8px",
+                    color: "#ff6b6b",
+                    marginBottom: "20px",
+                    fontSize: "0.9rem"
+                }}>
+                    Please connect your wallet at the top of the page to use this example.
+                </div>
             )}
+
+            <button
+                onClick={handleRun}
+                disabled={loading || !isConnected}
+                style={{
+                    width: "100%",
+                    padding: "15px 30px",
+                    background: isConnected ? "#4615C8" : "#1a1a1a",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "10px",
+                    fontSize: "1.1rem",
+                    fontWeight: 600,
+                    cursor: loading || !isConnected ? "not-allowed" : "pointer",
+                    opacity: loading || !isConnected ? 0.6 : 1,
+                    marginBottom: "20px"
+                }}
+            >
+                {loading ? "Running..." : (!isConnected ? "Connect Wallet First" : "Run Example")}
+            </button>
 
             {error && (
                 <div style={{
