@@ -24,7 +24,7 @@ function App() {
     const { wallets } = useWallets();
     const [selectedExample, setSelectedExample] = useState<Example | null>(null);
 
-        const examples: { api: Example[]; sdk: Example[] } = {
+    const examples: { api: Example[]; sdk: Example[] } = {
         api: [
             {
                 id: "get-quote",
@@ -66,7 +66,7 @@ function App() {
                 component: ExecuteProgressExample,
                 file: "src/examples/sdk/execute-progress.tsx"
             }
-            ]
+        ]
     };
 
     const handleExampleClick = (example: Example) => {
@@ -173,16 +173,16 @@ function App() {
 
     // Show examples list
     const connectedAddress = wallets.length > 0 ? wallets[0]?.address : (user?.wallet?.address || null);
-    const displayAddress = connectedAddress 
+    const displayAddress = connectedAddress
         ? `${connectedAddress.slice(0, 6)}...${connectedAddress.slice(-4)}`
         : "";
 
     return (
         <div className="app-container">
             <div className="card">
-                <div style={{ 
-                    display: "flex", 
-                    justifyContent: "space-between", 
+                <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
                     alignItems: "center",
                     marginBottom: "30px",
                     paddingBottom: "20px",
@@ -453,8 +453,8 @@ function App() {
                                 </div>
                             ))}
                         </div>
-                        </div>
                     </div>
+                </div>
 
                 <div className="footer">
                     <p>
