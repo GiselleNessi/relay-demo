@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { PrivyProvider } from '@privy-io/react-auth'
-// Initialize Relay SDK client
+// Initialize Relay SDK client (errors handled in relay.ts)
 import './config/relay'
 import App from './App'
 import './index.css'

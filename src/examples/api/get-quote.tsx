@@ -84,8 +84,8 @@ export function GetQuoteExample() {
                         width: "100%",
                         padding: "12px",
                         background: "#1a1a1a",
-                        border: `1px solid ${!quoteRequest.user || quoteRequest.user.length !== 42 
-                            ? "rgba(255, 107, 107, 0.5)" 
+                        border: `1px solid ${!quoteRequest.user || quoteRequest.user.length !== 42
+                            ? "rgba(255, 107, 107, 0.5)"
                             : "rgba(255, 255, 255, 0.1)"}`,
                         borderRadius: "8px",
                         color: "#e0e0e0",
