@@ -80,7 +80,7 @@ const quote = await getClient()?.actions.getQuote({
             // Try to use SDK if available and wallet is connected
             if (sdkAvailable && isConnected) {
                 try {
-                    const { getClient } = await import("@relayprotocol/relay-sdk");
+                    const { getClient } = await import("../../config/relay");
                     const wallet = await getWalletClient();
                     const client = getClient();
                     

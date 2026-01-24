@@ -61,7 +61,7 @@ getClient()?.actions.execute({
         // Try to use SDK if available
         if (sdkAvailable && isConnected) {
             try {
-                const { getClient } = await import("@relayprotocol/relay-sdk");
+                const { getClient } = await import("../../config/relay");
                 const wallet = await getWalletClient();
                 const client = getClient();
 
