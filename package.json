@@ -10,6 +10,7 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "@relayprotocol/relay-sdk": "^5.0.2",
     "viem": "^2.0.0",
     "@privy-io/react-auth": "^2.0.0"
   },
