@@ -78,6 +78,69 @@ function App() {
         setSelectedExample(null);
     };
 
+    // Show login screen if not authenticated
+    if (ready && !authenticated) {
+        return (
+            <div className="app-container">
+                <div className="card" style={{ maxWidth: "600px" }}>
+                    <div className="logo-container">
+                        <h1>Relay API Examples</h1>
+                        <p className="subtitle">
+                            Interactive examples for Relay API integration
+                        </p>
+                    </div>
+                    <div style={{
+                        background: "rgba(70, 21, 200, 0.1)",
+                        border: "1px solid rgba(70, 21, 200, 0.3)",
+                        borderRadius: "12px",
+                        padding: "30px",
+                        textAlign: "center"
+                    }}>
+                        <h2 style={{ color: "#e0e0e0", marginTop: 0, marginBottom: "15px" }}>
+                            Connect Your Wallet
+                        </h2>
+                        <p style={{ color: "#b0b0b0", marginBottom: "30px", lineHeight: "1.6" }}>
+                            Please connect your wallet to start exploring Relay API examples. You can use email, SMS, or an existing wallet.
+                        </p>
+                        <button
+                            onClick={login}
+                            style={{
+                                padding: "15px 40px",
+                                background: "#4615C8",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "10px",
+                                fontSize: "1.1rem",
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                transition: "all 0.2s"
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = "#5a2dd4";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = "#4615C8";
+                            }}
+                        >
+                            Connect Wallet
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Show loading state
+    if (!ready) {
+        return (
+            <div className="app-container">
+                <div className="card" style={{ maxWidth: "600px", textAlign: "center" }}>
+                    <p style={{ color: "#b0b0b0" }}>Loading...</p>
+                </div>
+            </div>
+        );
+    }
+
     // If an example is selected, show it
     if (selectedExample && selectedExample.component) {
         const Component = selectedExample.component;
@@ -102,21 +165,63 @@ function App() {
                     >
                         <span>←</span> Back to Examples
                     </button>
-                    <Component quoteResponse={quoteResponse} requestId={quoteResponse?.steps?.[0]?.requestId} />
+                    <Component />
                 </div>
             </div>
         );
     }
 
     // Show examples list
+    const connectedAddress = wallets.length > 0 ? wallets[0]?.address : (user?.wallet?.address || null);
+    const displayAddress = connectedAddress 
+        ? `${connectedAddress.slice(0, 6)}...${connectedAddress.slice(-4)}`
+        : "";
+
     return (
         <div className="app-container">
             <div className="card">
-                <div className="logo-container">
-                    <h1>Relay API Examples</h1>
-                    <p className="subtitle">
-                        Interactive examples for Relay API integration
-                    </p>
+                <div style={{ 
+                    display: "flex", 
+                    justifyContent: "space-between", 
+                    alignItems: "center",
+                    marginBottom: "30px",
+                    paddingBottom: "20px",
+                    borderBottom: "1px solid rgba(255, 255, 255, 0.1)"
+                }}>
+                    <div>
+                        <h1 style={{ margin: 0, marginBottom: "5px" }}>Relay API Examples</h1>
+                        <p className="subtitle" style={{ margin: 0 }}>
+                            Interactive examples for Relay API integration
+                        </p>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                        {connectedAddress && (
+                            <div style={{
+                                padding: "8px 16px",
+                                background: "rgba(70, 21, 200, 0.1)",
+                                border: "1px solid rgba(70, 21, 200, 0.3)",
+                                borderRadius: "8px",
+                                fontSize: "0.9rem",
+                                color: "#e0e0e0"
+                            }}>
+                                ✓ {displayAddress}
+                            </div>
+                        )}
+                        <button
+                            onClick={logout}
+                            style={{
+                                padding: "8px 16px",
+                                background: "#1a1a1a",
+                                border: "1px solid rgba(255, 255, 255, 0.1)",
+                                borderRadius: "8px",
+                                color: "#e0e0e0",
+                                cursor: "pointer",
+                                fontSize: "0.9rem"
+                            }}
+                        >
+                            Disconnect
+                        </button>
+                    </div>
                 </div>
 
                 {/* Workflow Guide */}
