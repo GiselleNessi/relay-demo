@@ -11,10 +11,17 @@ if (!rootElement) {
   throw new Error('Root element not found')
 }
 
+const privyAppId = import.meta.env.VITE_PRIVY_APP_ID || '';
+
+if (!privyAppId) {
+  console.warn('⚠️ VITE_PRIVY_APP_ID is not set. Privy wallet connection will not work.');
+  console.warn('📝 For CodeSandbox: Go to Settings > Environment Variables and add VITE_PRIVY_APP_ID');
+}
+
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <PrivyProvider
-      appId={import.meta.env.VITE_PRIVY_APP_ID || ''}
+      appId={privyAppId}
       config={{
         loginMethods: ['email', 'wallet', 'sms'],
         appearance: {
