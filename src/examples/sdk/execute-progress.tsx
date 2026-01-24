@@ -58,99 +58,45 @@ getClient()?.actions.execute({
 
         const quote = JSON.parse(storedQuote);
 
-        // Try to use SDK if available
-        if (sdkAvailable && isConnected) {
-            try {
-                const { getClient } = await import("../../config/relay");
-                const wallet = await getWalletClient();
-                const client = getClient();
+        // SDK examples MUST use the SDK - no API/manual execution fallback
+        if (!sdkAvailable) {
+            setError("Relay SDK is not installed. Please install @relayprotocol/relay-sdk to use this example.");
+            setLoading(false);
+            return;
+        }
 
-                if (client && wallet) {
-                    await client.actions.execute({
-                        quote,
-                        wallet,
-                        onProgress: ({ steps, fees, breakdown, currentStep, currentStepItem, txHashes, details }) => {
-                            setProgress({
-                                currentStep: currentStep?.index !== undefined ? currentStep.index + 1 : 1,
-                                totalSteps: steps?.length || 1,
-                                stepName: currentStep?.action || "Processing",
-                                status: currentStepItem?.status || "pending",
-                                txHashes: txHashes || [],
-                                details: details
-                            });
-                        }
-                    });
-                    setLoading(false);
-                    return;
-                }
-            } catch (sdkError: any) {
-                console.warn("SDK execution failed, falling back to manual execution:", sdkError);
-                // Fall through to manual execution
-            }
+        if (!isConnected) {
+            setError("Please connect your wallet to use the SDK example.");
+            setLoading(false);
+            return;
         }
 
         try {
-            const provider = window.ethereum;
-            await provider.request({ method: "eth_requestAccounts" });
-            const accounts = await provider.request({ method: "eth_accounts" });
-            const userAddress = accounts[0];
+            // Use SDK to execute with progress tracking
+            const { getClient } = await import("../../config/relay");
+            const wallet = await getWalletClient();
+            const client = getClient();
 
-            const chainId = await provider.request({ method: "eth_chainId" });
-            const originChainId = parseInt(chainId as string, 16);
-            const quoteOriginChainId = quote.steps[0]?.items[0]?.data?.chainId;
-
-            if (originChainId !== quoteOriginChainId) {
-                try {
-                    await provider.request({
-                        method: "wallet_switchEthereumChain",
-                        params: [{ chainId: `0x${quoteOriginChainId.toString(16)}` }],
-                    });
-                } catch (switchError: any) {
-                    if (switchError.code === 4902) {
-                        setError(`Please add chain ${quoteOriginChainId} to your wallet first`);
-                        setLoading(false);
-                        return;
-                    }
-                    throw switchError;
-                }
+            if (!client || !wallet) {
+                throw new Error("SDK client or wallet not available");
             }
 
-            for (let i = 0; i < quote.steps.length; i++) {
-                const step = quote.steps[i];
-                if (step.kind === "transaction") {
-                    const item = step.items[0];
-                    const txData = item.data;
-
+            await client.actions.execute({
+                quote,
+                wallet,
+                onProgress: ({ steps, fees, breakdown, currentStep, currentStepItem, txHashes, details }) => {
                     setProgress({
-                        currentStep: i + 1,
-                        totalSteps: quote.steps.length,
-                        stepName: step.action || "Processing",
-                        status: "pending"
-                    });
-
-                    const hash = await provider.request({
-                        method: "eth_sendTransaction",
-                        params: [{
-                            from: userAddress,
-                            to: txData.to,
-                            data: txData.data,
-                            value: txData.value,
-                            gas: txData.gas || undefined,
-                            maxFeePerGas: txData.maxFeePerGas || undefined,
-                            maxPriorityFeePerGas: txData.maxPriorityFeePerGas || undefined,
-                        }],
-                    });
-
-                    setProgress({
-                        currentStep: i + 1,
-                        totalSteps: quote.steps.length,
-                        stepName: step.action || "Processing",
-                        status: "completed",
-                        txHash: hash,
-                        requestId: step.requestId
+                        currentStep: currentStep?.index !== undefined ? currentStep.index + 1 : 1,
+                        totalSteps: steps?.length || 1,
+                        stepName: currentStep?.action || "Processing",
+                        status: currentStepItem?.status || "pending",
+                        txHashes: txHashes || [],
+                        details: details
                     });
                 }
-            }
+            });
+            
+            console.log("Execution completed via SDK");
         } catch (err: any) {
             setError(err.message || "Failed to execute transaction");
         } finally {
@@ -185,6 +131,20 @@ getClient()?.actions.execute({
                     {codeSnippet}
                 </pre>
             </div>
+
+            {!sdkAvailable && (
+                <div style={{
+                    padding: "15px",
+                    background: "rgba(255, 107, 107, 0.1)",
+                    border: "1px solid rgba(255, 107, 107, 0.3)",
+                    borderRadius: "8px",
+                    color: "#ff6b6b",
+                    marginBottom: "20px",
+                    fontSize: "0.9rem"
+                }}>
+                    <strong>Error:</strong> Relay SDK is not installed. This example requires <code>@relayprotocol/relay-sdk</code> to run.
+                </div>
+            )}
 
             {!isConnected && (
                 <div style={{

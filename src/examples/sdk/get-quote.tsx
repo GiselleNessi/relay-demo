@@ -75,65 +75,43 @@ const quote = await getClient()?.actions.getQuote({
         setQuoteResponse(null);
 
         try {
-            let data;
-
-            // Try to use SDK if available and wallet is connected
-            if (sdkAvailable && isConnected) {
-                try {
-                    const { getClient } = await import("../../config/relay");
-                    const wallet = await getWalletClient();
-                    const client = getClient();
-                    
-                    if (client && wallet) {
-                        const quote = await client.actions.getQuote({
-                            chainId: 8453,
-                            toChainId: 42161,
-                            currency: "0x0000000000000000000000000000000000000000",
-                            toCurrency: "0x0000000000000000000000000000000000000000",
-                            amount: "100000000000000",
-                            wallet,
-                            user: addressToUse,
-                            recipient: addressToUse,
-                            tradeType: "EXACT_INPUT"
-                        });
-                        data = quote;
-                    } else {
-                        throw new Error("SDK client not available");
-                    }
-                } catch (sdkError: any) {
-                    console.warn("SDK not available, falling back to API:", sdkError);
-                    // Fall through to API call
-                }
+            // SDK examples MUST use the SDK - no API fallback
+            if (!sdkAvailable) {
+                setError("Relay SDK is not installed. Please install @relayprotocol/relay-sdk to use this example.");
+                setLoading(false);
+                return;
             }
 
-            // Fallback to API if SDK not available or failed
-            if (!data) {
-                const response = await fetch("https://api.relay.link/quote/v2", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        user: addressToUse,
-                        originChainId: 8453,
-                        destinationChainId: 42161,
-                        originCurrency: "0x0000000000000000000000000000000000000000",
-                        destinationCurrency: "0x0000000000000000000000000000000000000000",
-                        amount: "100000000000000",
-                        tradeType: "EXACT_INPUT"
-                    }),
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || "Failed to get quote");
-                }
-
-                data = await response.json();
+            if (!isConnected) {
+                setError("Please connect your wallet to use the SDK example.");
+                setLoading(false);
+                return;
             }
+
+            // Use SDK to get quote
+            const { getClient } = await import("../../config/relay");
+            const wallet = await getWalletClient();
+            const client = getClient();
+            
+            if (!client || !wallet) {
+                throw new Error("SDK client or wallet not available");
+            }
+
+            const data = await client.actions.getQuote({
+                chainId: 8453,
+                toChainId: 42161,
+                currency: "0x0000000000000000000000000000000000000000",
+                toCurrency: "0x0000000000000000000000000000000000000000",
+                amount: "100000000000000",
+                wallet,
+                user: addressToUse,
+                recipient: addressToUse,
+                tradeType: "EXACT_INPUT"
+            });
 
             setQuoteResponse(data);
             localStorage.setItem("relayQuoteResponse", JSON.stringify(data));
+            console.log("Quote received via SDK:", data);
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -172,14 +150,14 @@ const quote = await getClient()?.actions.getQuote({
             {!sdkAvailable && (
                 <div style={{
                     padding: "15px",
-                    background: "rgba(251, 191, 36, 0.1)",
-                    border: "1px solid rgba(251, 191, 36, 0.3)",
+                    background: "rgba(255, 107, 107, 0.1)",
+                    border: "1px solid rgba(255, 107, 107, 0.3)",
                     borderRadius: "8px",
-                    color: "#fbbf24",
+                    color: "#ff6b6b",
                     marginBottom: "20px",
                     fontSize: "0.9rem"
                 }}>
-                    <strong>Note:</strong> SDK not installed. This example will use the API directly. Install <code>@relayprotocol/relay-sdk</code> to use the SDK.
+                    <strong>Error:</strong> Relay SDK is not installed. This example requires <code>@relayprotocol/relay-sdk</code> to run. Please install it to use this example.
                 </div>
             )}
 
