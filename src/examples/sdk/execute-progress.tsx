@@ -2,9 +2,12 @@
 // This component demonstrates how to execute a quote with real-time progress updates
 
 import { useState, useEffect } from "react";
-import { getWalletClient } from "../../utils/wallet";
+import { usePrivy } from '@privy-io/react-auth';
+import { usePrivyWalletClient } from "../../utils/wallet";
 
 export function ExecuteProgressExample() {
+    const { ready, authenticated, login } = usePrivy();
+    const { getWalletClient, isConnected } = usePrivyWalletClient();
     const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
@@ -38,8 +41,8 @@ getClient()?.actions.execute({
 });`;
 
     const handleRun = async () => {
-        if (typeof window.ethereum === "undefined") {
-            setError("No wallet detected. Please install MetaMask or another Web3 wallet.");
+        if (!ready || !authenticated || !isConnected) {
+            setError("Please connect your wallet first");
             return;
         }
 
@@ -56,7 +59,7 @@ getClient()?.actions.execute({
         const quote = JSON.parse(storedQuote);
 
         // Try to use SDK if available
-        if (sdkAvailable) {
+        if (sdkAvailable && isConnected) {
             try {
                 const { getClient } = await import("@relayprotocol/relay-sdk");
                 const wallet = await getWalletClient();
@@ -183,25 +186,45 @@ getClient()?.actions.execute({
                 </pre>
             </div>
 
-            <button
-                onClick={handleRun}
-                disabled={loading}
-                style={{
-                    width: "100%",
-                    padding: "15px 30px",
-                    background: "#4615C8",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "10px",
-                    fontSize: "1.1rem",
-                    fontWeight: 600,
-                    cursor: loading ? "not-allowed" : "pointer",
-                    opacity: loading ? 0.6 : 1,
-                    marginBottom: "20px"
-                }}
-            >
-                {loading ? "Running..." : "Run Example"}
-            </button>
+            {!isConnected ? (
+                <button
+                    onClick={login}
+                    style={{
+                        width: "100%",
+                        padding: "15px 30px",
+                        background: "#4615C8",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "10px",
+                        fontSize: "1.1rem",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        marginBottom: "20px"
+                    }}
+                >
+                    Connect Wallet
+                </button>
+            ) : (
+                <button
+                    onClick={handleRun}
+                    disabled={loading}
+                    style={{
+                        width: "100%",
+                        padding: "15px 30px",
+                        background: "#4615C8",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "10px",
+                        fontSize: "1.1rem",
+                        fontWeight: 600,
+                        cursor: loading ? "not-allowed" : "pointer",
+                        opacity: loading ? 0.6 : 1,
+                        marginBottom: "20px"
+                    }}
+                >
+                    {loading ? "Running..." : "Run Example"}
+                </button>
+            )}
 
             {error && (
                 <div style={{

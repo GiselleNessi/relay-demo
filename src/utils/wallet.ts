@@ -1,77 +1,42 @@
-// Wallet connection utilities
-// Simple wallet connection using window.ethereum (MetaMask, etc.)
+// Wallet connection utilities using Privy
+// This file provides utilities for getting wallet clients compatible with Relay SDK
 
-export interface WalletState {
-    address: string | null;
-    chainId: number | null;
-    isConnected: boolean;
-}
+import { useWallets, usePrivy } from '@privy-io/react-auth';
+import { createWalletClient, custom } from 'viem';
+import { base } from 'viem/chains';
 
-export async function connectWallet(): Promise<WalletState> {
-    if (typeof window === "undefined" || !window.ethereum) {
-        throw new Error("No wallet detected. Please install MetaMask or another Web3 wallet.");
-    }
-
-    try {
-        // Request account access
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-        const address = accounts[0];
-
-        // Get chain ID
-        const chainIdHex = await window.ethereum.request({ method: "eth_chainId" });
-        const chainId = parseInt(chainIdHex as string, 16);
-
-        return {
-            address,
-            chainId,
-            isConnected: true
-        };
-    } catch (error: any) {
-        throw new Error(error.message || "Failed to connect wallet");
-    }
-}
-
-export async function getWalletState(): Promise<WalletState | null> {
-    if (typeof window === "undefined" || !window.ethereum) {
-        return null;
-    }
-
-    try {
-        const accounts = await window.ethereum.request({ method: "eth_accounts" });
-        if (accounts.length === 0) {
-            return { address: null, chainId: null, isConnected: false };
+// Get a viem wallet client from Privy
+// This can be used in components that have access to Privy hooks
+export function usePrivyWalletClient() {
+    const { ready, authenticated } = usePrivy();
+    const { wallets } = useWallets();
+    
+    const getWalletClient = async () => {
+        if (!ready || !authenticated) {
+            throw new Error("Please connect your wallet first");
         }
 
-        const chainIdHex = await window.ethereum.request({ method: "eth_chainId" });
-        const chainId = parseInt(chainIdHex as string, 16);
+        const wallet = wallets[0];
+        if (!wallet) {
+            throw new Error("No wallet found. Please connect a wallet.");
+        }
 
-        return {
-            address: accounts[0],
-            chainId,
-            isConnected: true
-        };
-    } catch {
-        return null;
-    }
-}
-
-// Get a viem wallet client from window.ethereum
-export async function getWalletClient() {
-    if (typeof window === "undefined" || !window.ethereum) {
-        throw new Error("No wallet detected");
-    }
-
-    try {
-        const { createWalletClient, custom } = await import("viem");
-        const { base } = await import("viem/chains");
-
+        // Get the EIP1193 provider from Privy
+        const provider = await wallet.getEip1193Provider();
+        
         const client = createWalletClient({
+            account: wallet.address as `0x${string}`,
             chain: base,
-            transport: custom(window.ethereum)
+            transport: custom(provider)
         });
 
         return client;
-    } catch (error) {
-        throw new Error("Failed to create wallet client");
-    }
+    };
+
+    return {
+        getWalletClient,
+        wallet: wallets[0],
+        address: wallets[0]?.address,
+        isConnected: ready && authenticated && wallets.length > 0
+    };
 }

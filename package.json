@@ -11,7 +11,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "@relayprotocol/relay-sdk": "^1.0.0",
-    "viem": "^2.0.0"
+    "viem": "^2.0.0",
+    "@privy-io/react-auth": "^2.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.27",

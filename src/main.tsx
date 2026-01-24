@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { PrivyProvider } from '@privy-io/react-auth'
 import App from './App'
 import './index.css'
 
@@ -10,6 +11,20 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <App />
+    <PrivyProvider
+      appId={import.meta.env.VITE_PRIVY_APP_ID || 'clz1234567890'} // Replace with your Privy App ID
+      config={{
+        loginMethods: ['email', 'wallet', 'sms'],
+        appearance: {
+          theme: 'dark',
+          accentColor: '#4615C8',
+        },
+        embeddedWallets: {
+          createOnLogin: 'users-without-wallets',
+        },
+      }}
+    >
+      <App />
+    </PrivyProvider>
   </React.StrictMode>,
 )

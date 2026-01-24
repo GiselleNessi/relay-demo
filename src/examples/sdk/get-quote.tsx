@@ -2,11 +2,14 @@
 // This component demonstrates how to use the Relay SDK to get a quote
 
 import { useState, useEffect } from "react";
-import { connectWallet, getWalletState } from "../../utils/wallet";
+import { usePrivy, useWallets } from '@privy-io/react-auth';
+import { usePrivyWalletClient } from "../../utils/wallet";
 
 export function GetQuoteSDKExample() {
+    const { ready, authenticated, login } = usePrivy();
+    const { wallets } = useWallets();
+    const { getWalletClient, address, isConnected } = usePrivyWalletClient();
     const [walletAddress, setWalletAddress] = useState("");
-    const [isConnected, setIsConnected] = useState(false);
     const [loading, setLoading] = useState(false);
     const [quoteResponse, setQuoteResponse] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
@@ -29,47 +32,40 @@ const quote = await getClient()?.actions.getQuote({
   tradeType: "EXACT_INPUT"
 });`;
 
-    // Check if SDK is available and check wallet state
+    // Check if SDK is available and sync wallet address
     useEffect(() => {
         // Check if SDK is available
-        try {
-            import("@relayprotocol/relay-sdk").then(() => {
-                setSdkAvailable(true);
-            }).catch(() => {
-                setSdkAvailable(false);
-            });
-        } catch {
+        import("@relayprotocol/relay-sdk").then(() => {
+            setSdkAvailable(true);
+        }).catch(() => {
             setSdkAvailable(false);
-        }
-
-        // Check wallet connection state
-        getWalletState().then((state) => {
-            if (state?.isConnected && state.address) {
-                setWalletAddress(state.address);
-                setIsConnected(true);
-            }
         });
 
-        // Try to get address from localStorage
-        const storedQuote = localStorage.getItem("relayQuoteResponse");
-        if (storedQuote) {
-            try {
-                const quote = JSON.parse(storedQuote);
-                const address = quote.steps?.[0]?.items?.[0]?.data?.from || "";
-                if (address && !walletAddress) setWalletAddress(address);
-            } catch (e) {
-                // Ignore
+        // Sync wallet address from Privy
+        if (isConnected && address) {
+            setWalletAddress(address);
+        }
+
+        // Try to get address from localStorage as fallback
+        if (!walletAddress) {
+            const storedQuote = localStorage.getItem("relayQuoteResponse");
+            if (storedQuote) {
+                try {
+                    const quote = JSON.parse(storedQuote);
+                    const storedAddress = quote.steps?.[0]?.items?.[0]?.data?.from || "";
+                    if (storedAddress) setWalletAddress(storedAddress);
+                } catch (e) {
+                    // Ignore
+                }
             }
         }
-    }, []);
+    }, [isConnected, address, walletAddress]);
 
     const handleConnectWallet = async () => {
         try {
-            const wallet = await connectWallet();
-            setWalletAddress(wallet.address || "");
-            setIsConnected(wallet.isConnected);
+            await login();
         } catch (err: any) {
-            setError(err.message);
+            setError(err.message || "Failed to connect wallet");
         }
     };
 
@@ -86,12 +82,10 @@ const quote = await getClient()?.actions.getQuote({
         try {
             let data;
 
-            // Try to use SDK if available
-            if (sdkAvailable) {
+            // Try to use SDK if available and wallet is connected
+            if (sdkAvailable && isConnected) {
                 try {
                     const { getClient } = await import("@relayprotocol/relay-sdk");
-                    const { getWalletClient } = await import("../../utils/wallet");
-                    
                     const wallet = await getWalletClient();
                     const client = getClient();
                     
@@ -195,25 +189,37 @@ const quote = await getClient()?.actions.getQuote({
             )}
 
             <div style={{ marginBottom: "20px" }}>
-                <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+                {!isConnected ? (
                     <button
                         onClick={handleConnectWallet}
-                        disabled={isConnected}
                         style={{
-                            padding: "10px 20px",
-                            background: isConnected ? "#1a1a1a" : "#4615C8",
+                            width: "100%",
+                            padding: "12px 20px",
+                            background: "#4615C8",
                             color: "white",
-                            border: "1px solid rgba(255, 255, 255, 0.1)",
+                            border: "none",
                             borderRadius: "8px",
-                            cursor: isConnected ? "not-allowed" : "pointer",
-                            fontSize: "0.9rem",
+                            cursor: "pointer",
+                            fontSize: "1rem",
                             fontWeight: 600,
-                            opacity: isConnected ? 0.6 : 1
+                            marginBottom: "15px"
                         }}
                     >
-                        {isConnected ? "✓ Connected" : "Connect Wallet"}
+                        Connect Wallet
                     </button>
-                </div>
+                ) : (
+                    <div style={{
+                        padding: "12px",
+                        background: "rgba(70, 21, 200, 0.1)",
+                        border: "1px solid rgba(70, 21, 200, 0.3)",
+                        borderRadius: "8px",
+                        marginBottom: "15px",
+                        fontSize: "0.9rem",
+                        color: "#e0e0e0"
+                    }}>
+                        ✓ Connected: <code style={{ color: "#4615C8" }}>{address?.slice(0, 6)}...{address?.slice(-4)}</code>
+                    </div>
+                )}
                 <label style={{ display: "block", marginBottom: "5px", color: "#b0b0b0" }}>
                     Wallet Address:
                 </label>
