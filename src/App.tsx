@@ -23,7 +23,6 @@ function App() {
     const { ready, authenticated, login, logout, user } = usePrivy();
     const { wallets } = useWallets();
     const [selectedExample, setSelectedExample] = useState<Example | null>(null);
-    const [quoteResponse, setQuoteResponse] = useState<any>(null);
 
         const examples: { api: Example[]; sdk: Example[] } = {
         api: [
