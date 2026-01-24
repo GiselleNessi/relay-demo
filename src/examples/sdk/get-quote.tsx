@@ -2,12 +2,15 @@
 // This component demonstrates how to use the Relay SDK to get a quote
 
 import { useState, useEffect } from "react";
+import { connectWallet, getWalletState } from "../../utils/wallet";
 
 export function GetQuoteSDKExample() {
     const [walletAddress, setWalletAddress] = useState("");
+    const [isConnected, setIsConnected] = useState(false);
     const [loading, setLoading] = useState(false);
     const [quoteResponse, setQuoteResponse] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
+    const [sdkAvailable, setSdkAvailable] = useState(false);
 
     const codeSnippet = `import { getClient } from '@relayprotocol/relay-sdk';
 import { useWalletClient } from 'wagmi';
@@ -26,23 +29,53 @@ const quote = await getClient()?.actions.getQuote({
   tradeType: "EXACT_INPUT"
 });`;
 
-    // Try to get address from localStorage
+    // Check if SDK is available and check wallet state
     useEffect(() => {
+        // Check if SDK is available
+        try {
+            import("@relayprotocol/relay-sdk").then(() => {
+                setSdkAvailable(true);
+            }).catch(() => {
+                setSdkAvailable(false);
+            });
+        } catch {
+            setSdkAvailable(false);
+        }
+
+        // Check wallet connection state
+        getWalletState().then((state) => {
+            if (state?.isConnected && state.address) {
+                setWalletAddress(state.address);
+                setIsConnected(true);
+            }
+        });
+
+        // Try to get address from localStorage
         const storedQuote = localStorage.getItem("relayQuoteResponse");
         if (storedQuote) {
             try {
                 const quote = JSON.parse(storedQuote);
                 const address = quote.steps?.[0]?.items?.[0]?.data?.from || "";
-                if (address) setWalletAddress(address);
+                if (address && !walletAddress) setWalletAddress(address);
             } catch (e) {
                 // Ignore
             }
         }
     }, []);
 
+    const handleConnectWallet = async () => {
+        try {
+            const wallet = await connectWallet();
+            setWalletAddress(wallet.address || "");
+            setIsConnected(wallet.isConnected);
+        } catch (err: any) {
+            setError(err.message);
+        }
+    };
+
     const handleRun = async () => {
         if (!walletAddress || !walletAddress.startsWith("0x") || walletAddress.length !== 42) {
-            setError("Please enter a valid wallet address (0x...)");
+            setError("Please connect a wallet or enter a valid wallet address (0x...)");
             return;
         }
 
@@ -51,28 +84,65 @@ const quote = await getClient()?.actions.getQuote({
         setQuoteResponse(null);
 
         try {
-            const response = await fetch("https://api.relay.link/quote/v2", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    user: walletAddress,
-                    originChainId: 8453,
-                    destinationChainId: 42161,
-                    originCurrency: "0x0000000000000000000000000000000000000000",
-                    destinationCurrency: "0x0000000000000000000000000000000000000000",
-                    amount: "100000000000000",
-                    tradeType: "EXACT_INPUT"
-                }),
-            });
+            let data;
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to get quote");
+            // Try to use SDK if available
+            if (sdkAvailable) {
+                try {
+                    const { getClient } = await import("@relayprotocol/relay-sdk");
+                    const { getWalletClient } = await import("../../utils/wallet");
+                    
+                    const wallet = await getWalletClient();
+                    const client = getClient();
+                    
+                    if (client && wallet) {
+                        const quote = await client.actions.getQuote({
+                            chainId: 8453,
+                            toChainId: 42161,
+                            currency: "0x0000000000000000000000000000000000000000",
+                            toCurrency: "0x0000000000000000000000000000000000000000",
+                            amount: "100000000000000",
+                            wallet,
+                            user: walletAddress,
+                            recipient: walletAddress,
+                            tradeType: "EXACT_INPUT"
+                        });
+                        data = quote;
+                    } else {
+                        throw new Error("SDK client not available");
+                    }
+                } catch (sdkError: any) {
+                    console.warn("SDK not available, falling back to API:", sdkError);
+                    // Fall through to API call
+                }
             }
 
-            const data = await response.json();
+            // Fallback to API if SDK not available or failed
+            if (!data) {
+                const response = await fetch("https://api.relay.link/quote/v2", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        user: walletAddress,
+                        originChainId: 8453,
+                        destinationChainId: 42161,
+                        originCurrency: "0x0000000000000000000000000000000000000000",
+                        destinationCurrency: "0x0000000000000000000000000000000000000000",
+                        amount: "100000000000000",
+                        tradeType: "EXACT_INPUT"
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || "Failed to get quote");
+                }
+
+                data = await response.json();
+            }
+
             setQuoteResponse(data);
             localStorage.setItem("relayQuoteResponse", JSON.stringify(data));
         } catch (err: any) {
@@ -110,7 +180,40 @@ const quote = await getClient()?.actions.getQuote({
                 </pre>
             </div>
 
+            {!sdkAvailable && (
+                <div style={{
+                    padding: "15px",
+                    background: "rgba(251, 191, 36, 0.1)",
+                    border: "1px solid rgba(251, 191, 36, 0.3)",
+                    borderRadius: "8px",
+                    color: "#fbbf24",
+                    marginBottom: "20px",
+                    fontSize: "0.9rem"
+                }}>
+                    <strong>Note:</strong> SDK not installed. This example will use the API directly. Install <code>@relayprotocol/relay-sdk</code> to use the SDK.
+                </div>
+            )}
+
             <div style={{ marginBottom: "20px" }}>
+                <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+                    <button
+                        onClick={handleConnectWallet}
+                        disabled={isConnected}
+                        style={{
+                            padding: "10px 20px",
+                            background: isConnected ? "#1a1a1a" : "#4615C8",
+                            color: "white",
+                            border: "1px solid rgba(255, 255, 255, 0.1)",
+                            borderRadius: "8px",
+                            cursor: isConnected ? "not-allowed" : "pointer",
+                            fontSize: "0.9rem",
+                            fontWeight: 600,
+                            opacity: isConnected ? 0.6 : 1
+                        }}
+                    >
+                        {isConnected ? "✓ Connected" : "Connect Wallet"}
+                    </button>
+                </div>
                 <label style={{ display: "block", marginBottom: "5px", color: "#b0b0b0" }}>
                     Wallet Address:
                 </label>

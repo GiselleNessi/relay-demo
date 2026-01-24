@@ -1,12 +1,23 @@
 // SDK Execute with Progress Example
 // This component demonstrates how to execute a quote with real-time progress updates
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getWalletClient } from "../../utils/wallet";
 
 export function ExecuteProgressExample() {
     const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
+    const [sdkAvailable, setSdkAvailable] = useState(false);
+
+    // Check if SDK is available
+    useEffect(() => {
+        import("@relayprotocol/relay-sdk").then(() => {
+            setSdkAvailable(true);
+        }).catch(() => {
+            setSdkAvailable(false);
+        });
+    }, []);
 
     const codeSnippet = `import { getClient } from '@relayprotocol/relay-sdk';
 import { useWalletClient } from 'wagmi';
@@ -43,6 +54,37 @@ getClient()?.actions.execute({
         setProgress(null);
 
         const quote = JSON.parse(storedQuote);
+
+        // Try to use SDK if available
+        if (sdkAvailable) {
+            try {
+                const { getClient } = await import("@relayprotocol/relay-sdk");
+                const wallet = await getWalletClient();
+                const client = getClient();
+
+                if (client && wallet) {
+                    await client.actions.execute({
+                        quote,
+                        wallet,
+                        onProgress: ({ steps, fees, breakdown, currentStep, currentStepItem, txHashes, details }) => {
+                            setProgress({
+                                currentStep: currentStep?.index !== undefined ? currentStep.index + 1 : 1,
+                                totalSteps: steps?.length || 1,
+                                stepName: currentStep?.action || "Processing",
+                                status: currentStepItem?.status || "pending",
+                                txHashes: txHashes || [],
+                                details: details
+                            });
+                        }
+                    });
+                    setLoading(false);
+                    return;
+                }
+            } catch (sdkError: any) {
+                console.warn("SDK execution failed, falling back to manual execution:", sdkError);
+                // Fall through to manual execution
+            }
+        }
 
         try {
             const provider = window.ethereum;
