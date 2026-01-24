@@ -8,6 +8,16 @@ Interactive examples for Relay API integration. All examples are available in Co
 
 Click the link above to open this repository in CodeSandbox and explore all the examples interactively.
 
+### Local Development
+
+1. Clone the repository
+2. Copy `.env.example` to `.env` and add your Privy App ID:
+   ```
+   VITE_PRIVY_APP_ID=your_privy_app_id_here
+   ```
+3. Install dependencies: `npm install`
+4. Run the dev server: `npm run dev`
+
 ## Examples
 
 - **API Examples** - Direct API integration examples using fetch and REST endpoints

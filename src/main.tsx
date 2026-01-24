@@ -12,7 +12,7 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <PrivyProvider
-      appId="cmksms6wi01aula0ckltw8gi0"
+      appId={import.meta.env.VITE_PRIVY_APP_ID || ''}
       config={{
         loginMethods: ['email', 'wallet', 'sms'],
         appearance: {
