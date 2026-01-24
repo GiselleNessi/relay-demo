@@ -8,6 +8,17 @@ Interactive examples for Relay API integration. All examples are available in Co
 
 Click the link above to open this repository in CodeSandbox and explore all the examples interactively.
 
+### CodeSandbox Setup
+
+**Important**: This project requires a Privy App ID for wallet connection.
+
+1. After opening in CodeSandbox, go to **Settings** (gear icon) → **Environment Variables**
+2. Add a new variable:
+   - **Name**: `VITE_PRIVY_APP_ID`
+   - **Value**: Your Privy App ID (get one from [Privy Dashboard](https://dashboard.privy.io/))
+3. The dev server will automatically restart
+4. The app should now load and you can connect your wallet
+
 ### Local Development
 
 1. Clone the repository
