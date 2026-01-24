@@ -1,7 +1,7 @@
 // Get Quote Example - Step 2 from Relay API Quickstart
 // This component demonstrates how to get a quote from Relay API
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const RELAY_API_URL = "https://api.relay.link";
 
