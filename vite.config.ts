@@ -6,6 +6,15 @@ export default defineConfig({
   optimizeDeps: {
     include: ['axios', '@relayprotocol/relay-sdk', 'viem'],
   },
+  define: {
+    'process.env': {},
+    global: 'globalThis',
+  },
+  resolve: {
+    alias: {
+      buffer: 'buffer',
+    },
+  },
   server: {
     host: '0.0.0.0',
     port: 5173,
