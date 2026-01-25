@@ -2,12 +2,9 @@
 // This component demonstrates how to use the Relay SDK to get a quote
 
 import { useState, useEffect } from "react";
-import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { usePrivyWalletClient } from "../../utils/wallet";
 
 export function GetQuoteSDKExample() {
-    const { ready, authenticated, login } = usePrivy();
-    const { wallets } = useWallets();
     const { getWalletClient, address, isConnected } = usePrivyWalletClient();
     const [walletAddress, setWalletAddress] = useState("");
     const [loading, setLoading] = useState(false);
