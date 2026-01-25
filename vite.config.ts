@@ -5,6 +5,11 @@ export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
     include: ['axios', '@relayprotocol/relay-sdk', 'viem', 'buffer'],
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+    },
   },
   define: {
     'process.env': {},

@@ -1,6 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { PrivyProvider } from '@privy-io/react-auth'
+// Polyfill for buffer (required by Privy SDK)
+import { Buffer } from 'buffer'
+window.Buffer = Buffer
+globalThis.Buffer = Buffer
 // Initialize Relay SDK client (errors handled in relay.ts)
 import './config/relay'
 import App from './App'
