@@ -90,7 +90,7 @@ getClient()?.actions.execute({
                     // Find the current step index from the steps array
                     const currentStepIndex = steps?.findIndex(step => step.id === currentStep?.id) ?? -1;
                     const stepNumber = currentStepIndex >= 0 ? currentStepIndex + 1 : 1;
-                    
+
                     setProgress({
                         currentStep: stepNumber,
                         totalSteps: steps?.length || 1,
@@ -101,7 +101,7 @@ getClient()?.actions.execute({
                     });
                 }
             });
-            
+
             console.log("Execution completed via SDK");
         } catch (err: any) {
             setError(err.message || "Failed to execute transaction");
@@ -216,7 +216,7 @@ getClient()?.actions.execute({
                         </div>
                         <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
                             <span style={{ color: "#a0a0a0" }}>Status:</span>
-                            <span style={{ 
+                            <span style={{
                                 color: progress.status === "completed" ? "#4ade80" : "#fbbf24",
                                 fontWeight: 600,
                                 textTransform: "uppercase"
@@ -228,9 +228,9 @@ getClient()?.actions.execute({
                             <div style={{ padding: "10px 0" }}>
                                 <span style={{ color: "#a0a0a0", display: "block", marginBottom: "8px" }}>Transaction Hashes:</span>
                                 {progress.txHashes.map((hash: string, index: number) => (
-                                    <div key={index} style={{ 
-                                        display: "flex", 
-                                        justifyContent: "space-between", 
+                                    <div key={index} style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
                                         padding: "5px 0",
                                         borderBottom: index < progress.txHashes.length - 1 ? "1px solid rgba(255, 255, 255, 0.05)" : "none"
                                     }}>

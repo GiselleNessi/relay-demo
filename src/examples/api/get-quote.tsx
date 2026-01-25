@@ -80,53 +80,53 @@ export function GetQuoteExample() {
             <h2>Step 1: Get Quote</h2>
             <p>Every action in Relay starts with a Quote. The quote endpoint handles all of your use cases, whether it's a bridge, swap, or cross-chain call.</p>
 
-                <div style={{ marginBottom: "20px" }}>
-                    <label style={{ display: "block", marginBottom: "5px", color: "#b0b0b0" }}>
-                        User Address (Required):
-                        {connectedAddress && (
-                            <span style={{ 
-                                marginLeft: "10px", 
-                                color: "#4615C8", 
-                                fontSize: "0.85rem",
-                                fontWeight: "normal"
-                            }}>
-                                (using connected wallet)
-                            </span>
-                        )}
-                    </label>
-                    <input
-                        type="text"
-                        value={quoteRequest.user}
-                        onChange={(e) =>
-                            setQuoteRequest({ ...quoteRequest, user: e.target.value.trim() })
-                        }
-                        placeholder={connectedAddress || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"}
-                        style={{
-                            width: "100%",
-                            padding: "12px",
-                            background: "#1a1a1a",
-                            border: `1px solid ${!quoteRequest.user || quoteRequest.user.length !== 42 
-                                ? "rgba(255, 107, 107, 0.5)" 
-                                : "rgba(255, 255, 255, 0.1)"}`,
-                            borderRadius: "8px",
-                            color: "#e0e0e0",
-                            fontSize: "1rem",
-                            boxSizing: "border-box"
-                        }}
-                    />
-                    {!quoteRequest.user && (
-                        <small style={{ color: "#ff6b6b", marginTop: "5px", display: "block" }}>
-                            {connectedAddress 
-                                ? "Wallet connected but address not set. Please enter or connect wallet."
-                                : "Please enter a valid Ethereum wallet address or connect your wallet above"}
-                        </small>
+            <div style={{ marginBottom: "20px" }}>
+                <label style={{ display: "block", marginBottom: "5px", color: "#b0b0b0" }}>
+                    User Address (Required):
+                    {connectedAddress && (
+                        <span style={{
+                            marginLeft: "10px",
+                            color: "#4615C8",
+                            fontSize: "0.85rem",
+                            fontWeight: "normal"
+                        }}>
+                            (using connected wallet)
+                        </span>
                     )}
-                    {connectedAddress && quoteRequest.user === connectedAddress && (
-                        <small style={{ color: "#4615C8", marginTop: "5px", display: "block" }}>
-                            ✓ Using your connected wallet address
-                        </small>
-                    )}
-                </div>
+                </label>
+                <input
+                    type="text"
+                    value={quoteRequest.user}
+                    onChange={(e) =>
+                        setQuoteRequest({ ...quoteRequest, user: e.target.value.trim() })
+                    }
+                    placeholder={connectedAddress || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"}
+                    style={{
+                        width: "100%",
+                        padding: "12px",
+                        background: "#1a1a1a",
+                        border: `1px solid ${!quoteRequest.user || quoteRequest.user.length !== 42
+                            ? "rgba(255, 107, 107, 0.5)"
+                            : "rgba(255, 255, 255, 0.1)"}`,
+                        borderRadius: "8px",
+                        color: "#e0e0e0",
+                        fontSize: "1rem",
+                        boxSizing: "border-box"
+                    }}
+                />
+                {!quoteRequest.user && (
+                    <small style={{ color: "#ff6b6b", marginTop: "5px", display: "block" }}>
+                        {connectedAddress
+                            ? "Wallet connected but address not set. Please enter or connect wallet."
+                            : "Please enter a valid Ethereum wallet address or connect your wallet above"}
+                    </small>
+                )}
+                {connectedAddress && quoteRequest.user === connectedAddress && (
+                    <small style={{ color: "#4615C8", marginTop: "5px", display: "block" }}>
+                        ✓ Using your connected wallet address
+                    </small>
+                )}
+            </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", marginBottom: "20px" }}>
                 <div>

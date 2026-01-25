@@ -64,7 +64,7 @@ const { data } = await getClient().actions.claimAppFees({
             const { getClient } = await import("../../config/relay");
             const wallet = await getWalletClient();
             const client = getClient();
-            
+
             if (!client || !wallet) {
                 throw new Error("SDK client or wallet not available");
             }
@@ -81,7 +81,7 @@ const { data } = await getClient().actions.claimAppFees({
             }
 
             const data = await client.actions.claimAppFees(claimParams);
-            
+
             setResult({
                 success: true,
                 data,

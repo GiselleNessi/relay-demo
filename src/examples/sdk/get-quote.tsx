@@ -61,7 +61,7 @@ const quote = await getClient()?.actions.getQuote({
     const handleRun = async () => {
         // Use connected wallet address if available, otherwise use manual input
         const addressToUse = (isConnected && address) ? address : walletAddress;
-        
+
         if (!addressToUse || !addressToUse.startsWith("0x") || addressToUse.length !== 42) {
             setError("Please connect a wallet at the top of the page or enter a valid wallet address (0x...)");
             return;
@@ -89,7 +89,7 @@ const quote = await getClient()?.actions.getQuote({
             const { getClient } = await import("../../config/relay");
             const wallet = await getWalletClient();
             const client = getClient();
-            
+
             if (!client || !wallet) {
                 throw new Error("SDK client or wallet not available");
             }
@@ -200,8 +200,8 @@ const quote = await getClient()?.actions.getQuote({
                         width: "100%",
                         padding: "12px",
                         background: "#1a1a1a",
-                        border: `1px solid ${!walletAddress || walletAddress.length !== 42 
-                            ? "rgba(255, 107, 107, 0.5)" 
+                        border: `1px solid ${!walletAddress || walletAddress.length !== 42
+                            ? "rgba(255, 107, 107, 0.5)"
                             : "rgba(255, 255, 255, 0.1)"}`,
                         borderRadius: "8px",
                         color: "#e0e0e0",

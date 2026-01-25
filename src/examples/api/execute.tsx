@@ -50,12 +50,12 @@ export function ExecuteExample({ quoteResponse: propQuoteResponse }: ExecuteProp
             if (!provider) {
                 throw new Error("No wallet provider available");
             }
-            
+
             // Type assertion for provider
             const ethereumProvider = provider as {
                 request: (args: { method: string; params?: any[] }) => Promise<any>;
             };
-            
+
             // Request account access
             await ethereumProvider.request({ method: "eth_requestAccounts" });
             const accounts = await ethereumProvider.request({ method: "eth_accounts" });
