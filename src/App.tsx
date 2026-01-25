@@ -78,59 +78,7 @@ function App() {
         setSelectedExample(null);
     };
 
-    // Show login screen if not authenticated
-    if (ready && !authenticated) {
-        return (
-            <div className="app-container">
-                <div className="card" style={{ maxWidth: "600px" }}>
-                    <div className="logo-container">
-                        <h1>Relay API Examples</h1>
-                        <p className="subtitle">
-                            Interactive examples for Relay API integration
-                        </p>
-                    </div>
-                    <div style={{
-                        background: "rgba(70, 21, 200, 0.1)",
-                        border: "1px solid rgba(70, 21, 200, 0.3)",
-                        borderRadius: "12px",
-                        padding: "30px",
-                        textAlign: "center"
-                    }}>
-                        <h2 style={{ color: "#e0e0e0", marginTop: 0, marginBottom: "15px" }}>
-                            Connect Your Wallet
-                        </h2>
-                        <p style={{ color: "#b0b0b0", marginBottom: "30px", lineHeight: "1.6" }}>
-                            Please connect your wallet to start exploring Relay API examples. You can use email, SMS, or an existing wallet.
-                        </p>
-                        <button
-                            onClick={login}
-                            style={{
-                                padding: "15px 40px",
-                                background: "#4615C8",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "10px",
-                                fontSize: "1.1rem",
-                                fontWeight: 600,
-                                cursor: "pointer",
-                                transition: "all 0.2s"
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.background = "#5a2dd4";
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background = "#4615C8";
-                            }}
-                        >
-                            Connect Wallet
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // Show loading state
+    // Show loading state only briefly
     if (!ready) {
         return (
             <div className="app-container">
@@ -195,32 +143,50 @@ function App() {
                         </p>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-                        {connectedAddress && (
-                            <div style={{
-                                padding: "8px 16px",
-                                background: "rgba(70, 21, 200, 0.1)",
-                                border: "1px solid rgba(70, 21, 200, 0.3)",
-                                borderRadius: "8px",
-                                fontSize: "0.9rem",
-                                color: "#e0e0e0"
-                            }}>
-                                ✓ {displayAddress}
-                            </div>
+                        {authenticated && connectedAddress ? (
+                            <>
+                                <div style={{
+                                    padding: "8px 16px",
+                                    background: "rgba(70, 21, 200, 0.1)",
+                                    border: "1px solid rgba(70, 21, 200, 0.3)",
+                                    borderRadius: "8px",
+                                    fontSize: "0.9rem",
+                                    color: "#e0e0e0"
+                                }}>
+                                    ✓ {displayAddress}
+                                </div>
+                                <button
+                                    onClick={logout}
+                                    style={{
+                                        padding: "8px 16px",
+                                        background: "#1a1a1a",
+                                        border: "1px solid rgba(255, 255, 255, 0.1)",
+                                        borderRadius: "8px",
+                                        color: "#e0e0e0",
+                                        cursor: "pointer",
+                                        fontSize: "0.9rem"
+                                    }}
+                                >
+                                    Disconnect
+                                </button>
+                            </>
+                        ) : (
+                            <button
+                                onClick={login}
+                                style={{
+                                    padding: "8px 16px",
+                                    background: "#4615C8",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    color: "white",
+                                    cursor: "pointer",
+                                    fontSize: "0.9rem",
+                                    fontWeight: 500
+                                }}
+                            >
+                                Connect Wallet
+                            </button>
                         )}
-                        <button
-                            onClick={logout}
-                            style={{
-                                padding: "8px 16px",
-                                background: "#1a1a1a",
-                                border: "1px solid rgba(255, 255, 255, 0.1)",
-                                borderRadius: "8px",
-                                color: "#e0e0e0",
-                                cursor: "pointer",
-                                fontSize: "0.9rem"
-                            }}
-                        >
-                            Disconnect
-                        </button>
                     </div>
                 </div>
 
