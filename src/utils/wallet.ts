@@ -22,7 +22,29 @@ export function usePrivyWalletClient() {
         }
 
         // Get the EIP1193 provider from Privy
-        const provider = await wallet.getEip1193Provider();
+        // Check if the method exists, otherwise try alternative approaches
+        let provider;
+        try {
+            if (typeof wallet.getEip1193Provider === 'function') {
+                provider = await wallet.getEip1193Provider();
+            } else if (wallet.provider) {
+                // Some Privy wallet objects have provider directly
+                provider = wallet.provider;
+            } else if (wallet.walletClient) {
+                // Some wallets expose walletClient directly
+                return wallet.walletClient;
+            } else {
+                // Try to get provider from the wallet's connector
+                const connector = (wallet as any).connector;
+                if (connector && connector.getProvider) {
+                    provider = await connector.getProvider();
+                } else {
+                    throw new Error("Unable to get provider from wallet. Wallet type: " + wallet.walletClientType);
+                }
+            }
+        } catch (error: any) {
+            throw new Error(`Failed to get wallet provider: ${error.message}`);
+        }
         
         const client = createWalletClient({
             account: wallet.address as `0x${string}`,
