@@ -1,24 +1,21 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    nodePolyfills({
+      // Whether to polyfill `node:` protocol imports.
+      protocolImports: true,
+    }),
+  ],
   optimizeDeps: {
-    include: ['axios', '@relayprotocol/relay-sdk', 'viem', 'buffer'],
-    esbuildOptions: {
-      define: {
-        global: 'globalThis',
-      },
-    },
+    include: ['axios', '@relayprotocol/relay-sdk', 'viem'],
   },
   define: {
     'process.env': {},
     global: 'globalThis',
-  },
-  resolve: {
-    alias: {
-      buffer: 'buffer',
-    },
   },
   server: {
     host: '0.0.0.0',
