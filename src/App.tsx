@@ -137,9 +137,9 @@ function App() {
                     borderBottom: "1px solid rgba(255, 255, 255, 0.1)"
                 }}>
                     <div>
-                        <h1 style={{ margin: 0, marginBottom: "5px" }}>Relay API Examples</h1>
+                        <h1 style={{ margin: 0, marginBottom: "5px" }}>Relay Interactive Sandbox</h1>
                         <p className="subtitle" style={{ margin: 0 }}>
-                            Interactive examples for Relay API integration
+                            Test and learn Relay's cross-chain bridging with interactive examples
                         </p>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
