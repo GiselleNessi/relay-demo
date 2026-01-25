@@ -2,7 +2,12 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { PrivyProvider } from '@privy-io/react-auth'
 // Initialize Relay SDK client (errors handled in relay.ts)
-import './config/relay'
+// This import may fail but won't crash the app
+try {
+    require('./config/relay');
+} catch (error) {
+    // Silently handle - relay.ts has its own error handling
+}
 import App from './App'
 import './index.css'
 

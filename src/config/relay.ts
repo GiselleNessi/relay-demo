@@ -2,39 +2,41 @@
 // This file configures the Relay SDK client singleton
 // The client can be retrieved with getClient() throughout the application
 
-import {
-    createClient,
-    convertViemChainToRelayChain,
-    MAINNET_RELAY_API,
-    getClient as getRelayClient,
-} from '@relayprotocol/relay-sdk';
-import { base, arbitrum } from 'viem/chains';
+let clientInitialized = false;
+let getRelayClientFn: (() => any) | null = null;
 
-// Create the Relay client singleton
-// This creates a global instance that will be used throughout your application
-// Wrap in try-catch to prevent app crash if SDK has issues
-try {
-    createClient({
-        baseApiUrl: MAINNET_RELAY_API,
-        source: "relay-api-demo",
-        chains: [
-            convertViemChainToRelayChain(base),
-            convertViemChainToRelayChain(arbitrum)
-        ],
-        // Optional: Add other configuration options as needed
-        // logLevel: LogLevel.INFO,
-        // pollingInterval: 1000,
-        // maxPollingAttemptsBeforeTimeout: 60,
-    });
-} catch (error) {
-    console.error("Failed to initialize Relay SDK client:", error);
-}
+// Initialize the Relay SDK client asynchronously (non-blocking)
+// This won't prevent the app from rendering
+(async () => {
+    try {
+        const sdkModule = await import('@relayprotocol/relay-sdk');
+        const chainsModule = await import('viem/chains');
+        
+        sdkModule.createClient({
+            baseApiUrl: sdkModule.MAINNET_RELAY_API,
+            source: "relay-api-demo",
+            chains: [
+                sdkModule.convertViemChainToRelayChain(chainsModule.base),
+                sdkModule.convertViemChainToRelayChain(chainsModule.arbitrum)
+            ],
+        });
+        clientInitialized = true;
+        getRelayClientFn = sdkModule.getClient;
+        console.log('✅ Relay SDK client initialized successfully');
+    } catch (error: any) {
+        console.warn("⚠️ Relay SDK initialization failed:", error?.message || error);
+        console.warn("📝 SDK examples will not work, but API examples should still function.");
+    }
+})();
 
-// Export a helper to get the configured client
+// Export a helper to get the configured client (synchronous)
 // This retrieves the singleton instance created by createClient
 export function getClient() {
+    if (!clientInitialized || !getRelayClientFn) {
+        return null;
+    }
     try {
-        return getRelayClient();
+        return getRelayClientFn();
     } catch (error) {
         console.error("Failed to get Relay client:", error);
         return null;
