@@ -22,22 +22,34 @@ export function usePrivyWalletClient() {
         }
 
         // Get the EIP1193 provider from Privy
-        // Privy wallets may have different methods depending on wallet type
+        // Privy wallets have different methods depending on wallet type
         let provider;
         try {
-            // Try the standard method first
+            // Method 1: Standard getEip1193Provider (for external wallets)
             if (typeof wallet.getEip1193Provider === 'function') {
                 provider = await wallet.getEip1193Provider();
             } 
-            // For embedded wallets, try getProvider method
-            else if (typeof (wallet as any).getProvider === 'function') {
-                provider = await (wallet as any).getProvider();
+            // Method 2: For embedded wallets, use getEip1193Provider with different signature
+            else if (wallet.walletClientType === 'privy' || wallet.walletClientType === 'embedded') {
+                // Embedded wallets might need different handling
+                // Try to access the provider through the wallet's internal structure
+                const privyWallet = wallet as any;
+                if (privyWallet.getEip1193Provider) {
+                    provider = await privyWallet.getEip1193Provider();
+                } else if (privyWallet.provider) {
+                    provider = privyWallet.provider;
+                } else if (privyWallet.connector?.provider) {
+                    provider = privyWallet.connector.provider;
+                } else {
+                    // For embedded wallets, we might need to use Privy's provider directly
+                    throw new Error(`Embedded wallet detected but provider not accessible. Wallet type: ${wallet.walletClientType}`);
+                }
             }
-            // Check if provider is directly available
+            // Method 3: Check for provider directly
             else if ((wallet as any).provider) {
                 provider = (wallet as any).provider;
             }
-            // For some wallet types, check connector
+            // Method 4: Check connector
             else {
                 const connector = (wallet as any).connector;
                 if (connector) {
@@ -50,9 +62,14 @@ export function usePrivyWalletClient() {
             }
             
             if (!provider) {
-                throw new Error(`Unable to get provider from wallet. Wallet type: ${wallet.walletClientType || 'unknown'}. Available methods: ${Object.keys(wallet).join(', ')}`);
+                // Log wallet structure for debugging
+                console.error('Wallet object:', wallet);
+                console.error('Wallet type:', wallet.walletClientType);
+                console.error('Available keys:', Object.keys(wallet));
+                throw new Error(`Unable to get provider from wallet. Wallet type: ${wallet.walletClientType || 'unknown'}`);
             }
         } catch (error: any) {
+            console.error('Error getting wallet provider:', error);
             throw new Error(`Failed to get wallet provider: ${error.message}`);
         }
         
