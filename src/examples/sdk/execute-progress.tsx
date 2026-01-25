@@ -6,7 +6,7 @@ import { usePrivy } from '@privy-io/react-auth';
 import { usePrivyWalletClient } from "../../utils/wallet";
 
 export function ExecuteProgressExample() {
-    const { ready, authenticated, login } = usePrivy();
+    const { ready, authenticated } = usePrivy();
     const { getWalletClient, isConnected } = usePrivyWalletClient();
     const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState<any>(null);
@@ -32,9 +32,11 @@ const quote = await getClient()?.actions.getQuote({...});
 getClient()?.actions.execute({
   quote,
   wallet,
-  onProgress: ({ steps, fees, breakdown, currentStep, currentStepItem, txHashes, details }) => {
+  onProgress: ({ steps, currentStep, currentStepItem, txHashes, details }) => {
     // Update UI with progress
-    console.log('Current Step:', currentStep);
+    const stepIndex = steps?.findIndex(step => step.id === currentStep?.id) ?? -1;
+    console.log('Step:', stepIndex + 1, 'of', steps?.length);
+    console.log('Current Step:', currentStep?.action);
     console.log('Transaction Hashes:', txHashes);
     console.log('Details:', details);
   }
@@ -84,9 +86,13 @@ getClient()?.actions.execute({
             await client.actions.execute({
                 quote,
                 wallet,
-                onProgress: ({ steps, fees, breakdown, currentStep, currentStepItem, txHashes, details }) => {
+                onProgress: ({ steps, currentStep, currentStepItem, txHashes, details }) => {
+                    // Find the current step index from the steps array
+                    const currentStepIndex = steps?.findIndex(step => step.id === currentStep?.id) ?? -1;
+                    const stepNumber = currentStepIndex >= 0 ? currentStepIndex + 1 : 1;
+                    
                     setProgress({
-                        currentStep: currentStep?.index !== undefined ? currentStep.index + 1 : 1,
+                        currentStep: stepNumber,
                         totalSteps: steps?.length || 1,
                         stepName: currentStep?.action || "Processing",
                         status: currentStepItem?.status || "pending",
@@ -218,13 +224,42 @@ getClient()?.actions.execute({
                                 {progress.status}
                             </span>
                         </div>
-                        {progress.txHash && (
-                            <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0" }}>
-                                <span style={{ color: "#a0a0a0" }}>Transaction Hash:</span>
-                                <span style={{ color: "#e0e0e0", fontFamily: "monospace", fontSize: "0.85rem", wordBreak: "break-all" }}>
-                                    {progress.txHash}
-                                </span>
+                        {progress.txHashes && progress.txHashes.length > 0 && (
+                            <div style={{ padding: "10px 0" }}>
+                                <span style={{ color: "#a0a0a0", display: "block", marginBottom: "8px" }}>Transaction Hashes:</span>
+                                {progress.txHashes.map((hash: string, index: number) => (
+                                    <div key={index} style={{ 
+                                        display: "flex", 
+                                        justifyContent: "space-between", 
+                                        padding: "5px 0",
+                                        borderBottom: index < progress.txHashes.length - 1 ? "1px solid rgba(255, 255, 255, 0.05)" : "none"
+                                    }}>
+                                        <span style={{ color: "#a0a0a0", fontSize: "0.85rem" }}>Tx {index + 1}:</span>
+                                        <span style={{ color: "#e0e0e0", fontFamily: "monospace", fontSize: "0.85rem", wordBreak: "break-all" }}>
+                                            {hash}
+                                        </span>
+                                    </div>
+                                ))}
                             </div>
+                        )}
+                        {progress.details && (
+                            <details style={{ marginTop: "15px" }}>
+                                <summary style={{ color: "#4615C8", cursor: "pointer", padding: "10px", background: "#0D0C0D", borderRadius: "8px" }}>
+                                    View Progress Details
+                                </summary>
+                                <pre style={{
+                                    background: "#0D0C0D",
+                                    padding: "15px",
+                                    borderRadius: "8px",
+                                    overflowX: "auto",
+                                    color: "#e0e0e0",
+                                    fontSize: "0.85rem",
+                                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                                    marginTop: "10px"
+                                }}>
+                                    {JSON.stringify(progress.details, null, 2)}
+                                </pre>
+                            </details>
                         )}
                     </div>
                 </div>
