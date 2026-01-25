@@ -1,41 +1,49 @@
-# Relay API Examples
+# Relay API Demo
 
-Interactive examples for Relay API integration. All examples are available in CodeSandbox.
+Interactive demo showcasing how to use Relay for cross-chain bridging. This app demonstrates both the **Relay API** (direct REST calls) and **Relay SDK** approaches for bridging assets between chains.
 
-## 🚀 Quick Start
+**[🚀 Open in CodeSandbox →](https://githubbox.com/GiselleNessi/relay-demo)**
 
-**[Open in CodeSandbox →](https://githubbox.com/GiselleNessi/relay-demo)**
+## What This Demo Shows
 
-Click the link above to open this repository in CodeSandbox and explore all the examples interactively.
+This demo walks you through the complete cross-chain bridge flow:
 
-### CodeSandbox Setup
+1. **Get Quote** - Request a quote for bridging assets (e.g., ETH from Base to Arbitrum)
+2. **Execute** - Submit the transaction to your wallet
+3. **Monitor** - Track the transaction status until completion
 
-**Important**: This project requires a Privy App ID for wallet connection.
+### Examples Included
 
-1. After opening in CodeSandbox, go to **Settings** (gear icon) → **Environment Variables**
-2. Add a new variable:
-   - **Name**: `VITE_PRIVY_APP_ID`
-   - **Value**: Your Privy App ID (get one from [Privy Dashboard](https://dashboard.privy.io/))
-3. The dev server will automatically restart
-4. The app should now load and you can connect your wallet
+- **API Examples** - Step-by-step guide using direct API calls (`fetch`)
+- **SDK Examples** - Simplified approach using the Relay SDK with React hooks
+
+## Quick Start
+
+### CodeSandbox (Recommended)
+
+1. Click the link above to open in CodeSandbox
+2. Go to **Settings** → **Environment Variables**
+3. Add `VITE_PRIVY_APP_ID` with your [Privy App ID](https://dashboard.privy.io/)
+4. Connect your wallet and try the examples!
 
 ### Local Development
 
-1. Clone the repository
-2. Copy `.env.example` to `.env` and add your Privy App ID:
-   ```
-   VITE_PRIVY_APP_ID=your_privy_app_id_here
-   ```
-3. Install dependencies: `npm install`
-4. Run the dev server: `npm run dev`
+```bash
+# Clone and install
+git clone https://github.com/GiselleNessi/relay-demo.git
+cd relay-demo
+npm install
 
-## Examples
+# Set up environment
+cp .env.example .env
+# Add your VITE_PRIVY_APP_ID to .env
 
-- **API Examples** - Direct API integration examples using fetch and REST endpoints
-- **SDK Examples** - Examples using Relay SDK and React hooks
+# Run
+npm run dev
+```
 
 ## Learn More
 
 - [What is Relay?](https://docs.relay.link/what-is-relay)
 - [Relay API Quickstart](https://docs.relay.link/references/api/quickstart.md)
-- [Relay API Overview](https://docs.relay.link/references/api/overview.md)
+- [Relay API Documentation](https://docs.relay.link/references/api/overview.md)
