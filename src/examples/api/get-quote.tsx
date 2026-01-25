@@ -2,13 +2,12 @@
 // This component demonstrates how to get a quote from Relay API
 
 import { useState, useEffect } from "react";
-import { useWallets, usePrivy } from '@privy-io/react-auth';
+import { useWallets } from '@privy-io/react-auth';
 
 const RELAY_API_URL = "https://api.relay.link";
 
 export function GetQuoteExample() {
     const { wallets } = useWallets();
-    const { authenticated } = usePrivy();
     const connectedAddress = wallets.length > 0 ? wallets[0]?.address : null;
 
     const [quoteRequest, setQuoteRequest] = useState({
