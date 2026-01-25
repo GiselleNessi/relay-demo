@@ -25,18 +25,13 @@ export function usePrivyWalletClient() {
         // Privy wallets have different methods depending on wallet type
         let provider;
         
-        // Log wallet structure for debugging
-        console.log('Wallet object:', wallet);
-        console.log('Wallet type:', wallet.walletClientType);
-        console.log('Available methods:', Object.keys(wallet));
-        
         try {
-            // Method 1: Standard getEip1193Provider (for external wallets)
-            if (typeof wallet.getEip1193Provider === 'function') {
-                provider = await wallet.getEip1193Provider();
-            } 
-            // Method 2: Check if it's a method that needs to be called differently
-            else if ('getEip1193Provider' in wallet && typeof (wallet as any).getEip1193Provider === 'function') {
+            // Method 1: getEthereumProvider (for MetaMask and external wallets)
+            if (typeof (wallet as any).getEthereumProvider === 'function') {
+                provider = await (wallet as any).getEthereumProvider();
+            }
+            // Method 2: Standard getEip1193Provider (for some wallet types)
+            else if (typeof (wallet as any).getEip1193Provider === 'function') {
                 provider = await (wallet as any).getEip1193Provider();
             }
             // Method 3: For embedded wallets, check connector
