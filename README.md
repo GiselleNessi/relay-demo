@@ -1,6 +1,6 @@
-# Relay API Demo
+# Relay Interactive Sandbox
 
-Interactive demo showcasing how to use Relay for cross-chain bridging. This app demonstrates both the **Relay API** (direct REST calls) and **Relay SDK** approaches for bridging assets between chains.
+Interactive sandbox for testing and learning Relay's cross-chain bridging. Try both the **Relay API** (direct REST calls) and **Relay SDK** approaches for bridging assets between chains.
 
 **[🚀 Open in CodeSandbox →](https://githubbox.com/GiselleNessi/relay-demo)**
 
