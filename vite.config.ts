@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
-    include: ['axios', '@relayprotocol/relay-sdk', 'viem'],
+    include: ['axios', '@relayprotocol/relay-sdk', 'viem', 'buffer'],
   },
   define: {
     'process.env': {},
