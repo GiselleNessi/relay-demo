@@ -3,18 +3,6 @@
 
 import { useState, useEffect } from "react";
 
-// Type declaration for window.ethereum
-declare global {
-    interface Window {
-        ethereum?: {
-            request: (args: { method: string; params?: any[] }) => Promise<any>;
-            isMetaMask?: boolean;
-        };
-    }
-}
-
-const RELAY_API_URL = "https://api.relay.link";
-
 interface ExecuteProps {
     quoteResponse?: any; // Quote response from Step 2
 }
@@ -59,14 +47,22 @@ export function ExecuteExample({ quoteResponse: propQuoteResponse }: ExecuteProp
 
         try {
             const provider = window.ethereum;
+            if (!provider) {
+                throw new Error("No wallet provider available");
+            }
+            
+            // Type assertion for provider
+            const ethereumProvider = provider as {
+                request: (args: { method: string; params?: any[] }) => Promise<any>;
+            };
             
             // Request account access
-            await provider.request({ method: "eth_requestAccounts" });
-            const accounts = await provider.request({ method: "eth_accounts" });
-            const userAddress = accounts[0];
+            await ethereumProvider.request({ method: "eth_requestAccounts" });
+            const accounts = await ethereumProvider.request({ method: "eth_accounts" });
+            const userAddress = accounts[0] as string;
 
             // Get chain ID
-            const chainId = await provider.request({ method: "eth_chainId" });
+            const chainId = await ethereumProvider.request({ method: "eth_chainId" });
             const originChainId = parseInt(chainId as string, 16);
 
             // Check if we're on the correct chain
@@ -74,7 +70,7 @@ export function ExecuteExample({ quoteResponse: propQuoteResponse }: ExecuteProp
             if (originChainId !== quoteOriginChainId) {
                 // Switch chain if needed
                 try {
-                    await provider.request({
+                    await ethereumProvider.request({
                         method: "wallet_switchEthereumChain",
                         params: [{ chainId: `0x${quoteOriginChainId.toString(16)}` }],
                     });
@@ -97,7 +93,7 @@ export function ExecuteExample({ quoteResponse: propQuoteResponse }: ExecuteProp
                     console.log("Submitting Transaction...", txData);
 
                     // Send transaction
-                    const hash = await provider.request({
+                    const hash = await ethereumProvider.request({
                         method: "eth_sendTransaction",
                         params: [{
                             from: userAddress,
