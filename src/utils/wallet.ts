@@ -22,25 +22,35 @@ export function usePrivyWalletClient() {
         }
 
         // Get the EIP1193 provider from Privy
-        // Check if the method exists, otherwise try alternative approaches
+        // Privy wallets may have different methods depending on wallet type
         let provider;
         try {
+            // Try the standard method first
             if (typeof wallet.getEip1193Provider === 'function') {
                 provider = await wallet.getEip1193Provider();
-            } else if (wallet.provider) {
-                // Some Privy wallet objects have provider directly
-                provider = wallet.provider;
-            } else if (wallet.walletClient) {
-                // Some wallets expose walletClient directly
-                return wallet.walletClient;
-            } else {
-                // Try to get provider from the wallet's connector
+            } 
+            // For embedded wallets, try getProvider method
+            else if (typeof (wallet as any).getProvider === 'function') {
+                provider = await (wallet as any).getProvider();
+            }
+            // Check if provider is directly available
+            else if ((wallet as any).provider) {
+                provider = (wallet as any).provider;
+            }
+            // For some wallet types, check connector
+            else {
                 const connector = (wallet as any).connector;
-                if (connector && connector.getProvider) {
-                    provider = await connector.getProvider();
-                } else {
-                    throw new Error("Unable to get provider from wallet. Wallet type: " + wallet.walletClientType);
+                if (connector) {
+                    if (typeof connector.getProvider === 'function') {
+                        provider = await connector.getProvider();
+                    } else if (connector.provider) {
+                        provider = connector.provider;
+                    }
                 }
+            }
+            
+            if (!provider) {
+                throw new Error(`Unable to get provider from wallet. Wallet type: ${wallet.walletClientType || 'unknown'}. Available methods: ${Object.keys(wallet).join(', ')}`);
             }
         } catch (error: any) {
             throw new Error(`Failed to get wallet provider: ${error.message}`);
