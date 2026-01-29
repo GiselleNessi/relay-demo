@@ -75,23 +75,20 @@ export function GetQuoteExample() {
         }
     };
 
-    return (
-        <div style={{ padding: "20px" }}>
-            <h2>Step 1: Get Quote</h2>
-            <p>Every action in Relay starts with a Quote. The quote endpoint handles all of your use cases, whether it's a bridge, swap, or cross-chain call.</p>
+    const userInputInvalid = !quoteRequest.user || quoteRequest.user.length !== 42;
 
-            <div style={{ marginBottom: "20px" }}>
-                <label style={{ display: "block", marginBottom: "5px", color: "#b0b0b0" }}>
+    return (
+        <div className="example-page">
+            <h2 className="example-title">Step 1: Get Quote</h2>
+            <p className="example-description">
+                Every action in Relay starts with a Quote. The quote endpoint handles all of your use cases, whether it's a bridge, swap, or cross-chain call.
+            </p>
+
+            <div className="example-field">
+                <label className="example-label">
                     User Address (Required):
                     {connectedAddress && (
-                        <span style={{
-                            marginLeft: "10px",
-                            color: "#4615C8",
-                            fontSize: "0.85rem",
-                            fontWeight: "normal"
-                        }}>
-                            (using connected wallet)
-                        </span>
+                        <span className="example-label-inline">(using connected wallet)</span>
                     )}
                 </label>
                 <input
@@ -101,38 +98,25 @@ export function GetQuoteExample() {
                         setQuoteRequest({ ...quoteRequest, user: e.target.value.trim() })
                     }
                     placeholder={connectedAddress || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"}
-                    style={{
-                        width: "100%",
-                        padding: "12px",
-                        background: "#1a1a1a",
-                        border: `1px solid ${!quoteRequest.user || quoteRequest.user.length !== 42
-                            ? "rgba(255, 107, 107, 0.5)"
-                            : "rgba(255, 255, 255, 0.1)"}`,
-                        borderRadius: "8px",
-                        color: "#e0e0e0",
-                        fontSize: "1rem",
-                        boxSizing: "border-box"
-                    }}
+                    className={`example-input ${userInputInvalid ? "invalid" : ""}`}
                 />
                 {!quoteRequest.user && (
-                    <small style={{ color: "#ff6b6b", marginTop: "5px", display: "block" }}>
+                    <small className={`example-helper ${userInputInvalid ? "example-helper-error" : ""}`}>
                         {connectedAddress
                             ? "Wallet connected but address not set. Please enter or connect wallet."
                             : "Please enter a valid Ethereum wallet address or connect your wallet above"}
                     </small>
                 )}
                 {connectedAddress && quoteRequest.user === connectedAddress && (
-                    <small style={{ color: "#4615C8", marginTop: "5px", display: "block" }}>
+                    <small className="example-helper example-helper-success">
                         ✓ Using your connected wallet address
                     </small>
                 )}
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", marginBottom: "20px" }}>
-                <div>
-                    <label style={{ display: "block", marginBottom: "5px", color: "#b0b0b0" }}>
-                        Origin Chain ID:
-                    </label>
+            <div className="example-grid-2">
+                <div className="example-field">
+                    <label className="example-label">Origin Chain ID:</label>
                     <input
                         type="number"
                         value={quoteRequest.originChainId}
@@ -142,23 +126,12 @@ export function GetQuoteExample() {
                                 originChainId: parseInt(e.target.value),
                             })
                         }
-                        style={{
-                            width: "100%",
-                            padding: "12px",
-                            background: "#1a1a1a",
-                            border: "1px solid rgba(255, 255, 255, 0.1)",
-                            borderRadius: "8px",
-                            color: "#e0e0e0",
-                            fontSize: "1rem",
-                            boxSizing: "border-box"
-                        }}
+                        className="example-input"
                     />
                 </div>
 
-                <div>
-                    <label style={{ display: "block", marginBottom: "5px", color: "#b0b0b0" }}>
-                        Destination Chain ID:
-                    </label>
+                <div className="example-field">
+                    <label className="example-label">Destination Chain ID:</label>
                     <input
                         type="number"
                         value={quoteRequest.destinationChainId}
@@ -168,125 +141,70 @@ export function GetQuoteExample() {
                                 destinationChainId: parseInt(e.target.value),
                             })
                         }
-                        style={{
-                            width: "100%",
-                            padding: "12px",
-                            background: "#1a1a1a",
-                            border: "1px solid rgba(255, 255, 255, 0.1)",
-                            borderRadius: "8px",
-                            color: "#e0e0e0",
-                            fontSize: "1rem",
-                            boxSizing: "border-box"
-                        }}
+                        className="example-input"
                     />
                 </div>
             </div>
 
-            <div style={{ marginBottom: "20px" }}>
-                <label style={{ display: "block", marginBottom: "5px", color: "#b0b0b0" }}>
-                    Amount (wei):
-                </label>
+            <div className="example-field">
+                <label className="example-label">Amount (wei):</label>
                 <input
                     type="text"
                     value={quoteRequest.amount}
                     onChange={(e) =>
                         setQuoteRequest({ ...quoteRequest, amount: e.target.value })
                     }
-                    style={{
-                        width: "100%",
-                        padding: "12px",
-                        background: "#1a1a1a",
-                        border: "1px solid rgba(255, 255, 255, 0.1)",
-                        borderRadius: "8px",
-                        color: "#e0e0e0",
-                        fontSize: "1rem",
-                        boxSizing: "border-box"
-                    }}
+                    className="example-input"
                 />
             </div>
 
             <button
                 onClick={handleGetQuote}
                 disabled={loading}
-                style={{
-                    width: "100%",
-                    padding: "15px 30px",
-                    background: "#4615C8",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "10px",
-                    fontSize: "1.1rem",
-                    fontWeight: 600,
-                    cursor: loading ? "not-allowed" : "pointer",
-                    opacity: loading ? 0.6 : 1
-                }}
+                className="example-run-button"
             >
                 {loading ? "Getting Quote..." : "Get Quote"}
             </button>
 
             {error && (
-                <div style={{
-                    marginTop: "20px",
-                    padding: "15px",
-                    background: "#3d1f1f",
-                    border: "1px solid #5a2a2a",
-                    borderRadius: "8px",
-                    color: "#ff6b6b"
-                }}>
+                <div className="example-error">
                     <strong>Error:</strong> {error}
                 </div>
             )}
 
             {quoteResponse && (
-                <div style={{ marginTop: "30px" }}>
-                    <h3>Quote Response</h3>
-                    <div style={{
-                        background: "#1a1a1a",
-                        borderRadius: "12px",
-                        padding: "20px",
-                        marginBottom: "20px"
-                    }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                            <span style={{ color: "#a0a0a0" }}>Operation:</span>
-                            <span style={{ color: "#e0e0e0", fontWeight: 600 }}>
+                <div className="example-result-section">
+                    <h3 className="example-result-title">Quote Response</h3>
+                    <div className="example-result-box">
+                        <div className="example-result-row">
+                            <span className="example-result-label">Operation:</span>
+                            <span className="example-result-value">
                                 {quoteResponse.details?.operation || "N/A"}
                             </span>
                         </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                            <span style={{ color: "#a0a0a0" }}>You Send:</span>
-                            <span style={{ color: "#e0e0e0", fontWeight: 600 }}>
+                        <div className="example-result-row">
+                            <span className="example-result-label">You Send:</span>
+                            <span className="example-result-value">
                                 {quoteResponse.details?.currencyIn?.amountFormatted || quoteResponse.details?.currencyIn?.amount || "0"} ETH
                             </span>
                         </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                            <span style={{ color: "#a0a0a0" }}>You Receive:</span>
-                            <span style={{ color: "#e0e0e0", fontWeight: 600 }}>
+                        <div className="example-result-row">
+                            <span className="example-result-label">You Receive:</span>
+                            <span className="example-result-value">
                                 {quoteResponse.details?.currencyOut?.amountFormatted || quoteResponse.details?.currencyOut?.amount || "0"} ETH
                             </span>
                         </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0" }}>
-                            <span style={{ color: "#a0a0a0" }}>Request ID:</span>
-                            <span style={{ color: "#e0e0e0", fontWeight: 600, fontFamily: "monospace", fontSize: "0.85rem", wordBreak: "break-all" }}>
+                        <div className="example-result-row">
+                            <span className="example-result-label">Request ID:</span>
+                            <span className="example-result-value mono">
                                 {quoteResponse.steps?.[0]?.requestId || quoteResponse.requestId || "N/A"}
                             </span>
                         </div>
                     </div>
 
-                    <details>
-                        <summary style={{ color: "#4615C8", cursor: "pointer", padding: "10px", background: "#1a1a1a", borderRadius: "8px", marginBottom: "10px" }}>
-                            View Full JSON Response
-                        </summary>
-                        <pre style={{
-                            background: "#0D0C0D",
-                            padding: "15px",
-                            borderRadius: "8px",
-                            overflowX: "auto",
-                            color: "#e0e0e0",
-                            fontSize: "0.85rem",
-                            border: "1px solid rgba(255, 255, 255, 0.1)"
-                        }}>
-                            {JSON.stringify(quoteResponse, null, 2)}
-                        </pre>
+                    <details className="example-details">
+                        <summary className="example-details-summary">View Full JSON Response</summary>
+                        <pre className="example-pre">{JSON.stringify(quoteResponse, null, 2)}</pre>
                     </details>
                 </div>
             )}

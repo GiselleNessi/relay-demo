@@ -11,7 +11,7 @@ interface MonitorProps {
 
 export function MonitorExample({ requestId: propRequestId }: MonitorProps = {}) {
     const [requestId, setRequestId] = useState(propRequestId || "");
-    
+
     // Update requestId if prop changes
     useEffect(() => {
         if (propRequestId) {
@@ -83,64 +83,46 @@ export function MonitorExample({ requestId: propRequestId }: MonitorProps = {}) 
         };
     }, [pollInterval]);
 
-    const getStatusColor = (statusValue: string) => {
+    const getStatusClass = (statusValue: string) => {
         switch (statusValue?.toLowerCase()) {
             case "success":
-                return "#4ade80";
+                return "status-success";
             case "pending":
             case "waiting":
-                return "#fbbf24";
+                return "status-pending";
             case "failed":
             case "refunded":
-                return "#f87171";
+                return "status-failed";
             default:
-                return "#a0a0a0";
+                return "status-default";
         }
     };
 
-    return (
-        <div style={{ padding: "20px" }}>
-            <h2>Step 3: Monitor</h2>
-            <p>Use the status endpoint with the requestId to track status and confirm success. Poll this endpoint once per second. Use the requestId from Step 2 (Execute).</p>
+    const statusValue = status?.status || status?.intent?.status || "N/A";
 
-            <div style={{ marginBottom: "20px" }}>
-                <label style={{ display: "block", marginBottom: "5px", color: "#b0b0b0" }}>
-                    Request ID:
-                </label>
+    return (
+        <div className="example-page">
+            <h2 className="example-title">Step 3: Monitor</h2>
+            <p className="example-description">
+                Use the status endpoint with the requestId to track status and confirm success. Poll this endpoint once per second. Use the requestId from Step 2 (Execute).
+            </p>
+
+            <div className="example-field">
+                <label className="example-label">Request ID:</label>
                 <input
                     type="text"
                     value={requestId}
                     onChange={(e) => setRequestId(e.target.value.trim())}
                     placeholder="0x20538510fd9eab7a90c3e54418f8f477bfef24d83c11955a8ca835e6154b59d3"
-                    style={{
-                        width: "100%",
-                        padding: "12px",
-                        background: "#1a1a1a",
-                        border: "1px solid rgba(255, 255, 255, 0.1)",
-                        borderRadius: "8px",
-                        color: "#e0e0e0",
-                        fontSize: "1rem",
-                        boxSizing: "border-box"
-                    }}
+                    className="example-input"
                 />
             </div>
 
-            <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+            <div className="example-button-group">
                 <button
                     onClick={checkStatus}
                     disabled={loading || !requestId}
-                    style={{
-                        flex: 1,
-                        padding: "15px 30px",
-                        background: requestId ? "#4615C8" : "#666",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "10px",
-                        fontSize: "1.1rem",
-                        fontWeight: 600,
-                        cursor: loading || !requestId ? "not-allowed" : "pointer",
-                        opacity: loading || !requestId ? 0.6 : 1
-                    }}
+                    className={`example-run-button ${!requestId ? "example-run-button-disabled" : ""}`}
                 >
                     {loading ? "Checking..." : "Check Status"}
                 </button>
@@ -148,35 +130,14 @@ export function MonitorExample({ requestId: propRequestId }: MonitorProps = {}) 
                     <button
                         onClick={startPolling}
                         disabled={!requestId}
-                        style={{
-                            flex: 1,
-                            padding: "15px 30px",
-                            background: requestId ? "#10b981" : "#666",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "10px",
-                            fontSize: "1.1rem",
-                            fontWeight: 600,
-                            cursor: requestId ? "pointer" : "not-allowed",
-                            opacity: requestId ? 1 : 0.6
-                        }}
+                        className={`example-run-button example-run-button-secondary ${!requestId ? "example-run-button-disabled" : ""}`}
                     >
                         Start Polling
                     </button>
                 ) : (
                     <button
                         onClick={stopPolling}
-                        style={{
-                            flex: 1,
-                            padding: "15px 30px",
-                            background: "#ef4444",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "10px",
-                            fontSize: "1.1rem",
-                            fontWeight: 600,
-                            cursor: "pointer"
-                        }}
+                        className="example-run-button example-run-button-danger"
                     >
                         Stop Polling
                     </button>
@@ -184,78 +145,50 @@ export function MonitorExample({ requestId: propRequestId }: MonitorProps = {}) 
             </div>
 
             {error && (
-                <div style={{
-                    marginTop: "20px",
-                    padding: "15px",
-                    background: "#3d1f1f",
-                    border: "1px solid #5a2a2a",
-                    borderRadius: "8px",
-                    color: "#ff6b6b"
-                }}>
+                <div className="example-error">
                     <strong>Error:</strong> {error}
                 </div>
             )}
 
             {status && (
-                <div style={{ marginTop: "30px" }}>
-                    <h3>Status Response</h3>
-                    <div style={{
-                        background: "#1a1a1a",
-                        borderRadius: "12px",
-                        padding: "20px",
-                        marginBottom: "20px"
-                    }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                            <span style={{ color: "#a0a0a0" }}>Status:</span>
-                            <span style={{ 
-                                color: getStatusColor(status.status || status.intent?.status), 
-                                fontWeight: 600,
-                                textTransform: "uppercase"
-                            }}>
-                                {status.status || status.intent?.status || "N/A"}
+                <div className="example-result-section">
+                    <h3 className="example-result-title">Status Response</h3>
+                    <div className="example-result-box">
+                        <div className="example-result-row">
+                            <span className="example-result-label">Status:</span>
+                            <span className={`example-result-value ${getStatusClass(statusValue)}`}>
+                                {statusValue}
                             </span>
                         </div>
                         {status.intent?.requestId && (
-                            <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                                <span style={{ color: "#a0a0a0" }}>Request ID:</span>
-                                <span style={{ color: "#e0e0e0", fontFamily: "monospace", fontSize: "0.85rem", wordBreak: "break-all" }}>
+                            <div className="example-result-row">
+                                <span className="example-result-label">Request ID:</span>
+                                <span className="example-result-value mono">
                                     {status.intent.requestId}
                                 </span>
                             </div>
                         )}
                         {status.intent?.originTxHash && (
-                            <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                                <span style={{ color: "#a0a0a0" }}>Origin Tx Hash:</span>
-                                <span style={{ color: "#e0e0e0", fontFamily: "monospace", fontSize: "0.85rem", wordBreak: "break-all" }}>
+                            <div className="example-result-row">
+                                <span className="example-result-label">Origin Tx Hash:</span>
+                                <span className="example-result-value mono">
                                     {status.intent.originTxHash}
                                 </span>
                             </div>
                         )}
                         {status.intent?.destinationTxHash && (
-                            <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0" }}>
-                                <span style={{ color: "#a0a0a0" }}>Destination Tx Hash:</span>
-                                <span style={{ color: "#e0e0e0", fontFamily: "monospace", fontSize: "0.85rem", wordBreak: "break-all" }}>
+                            <div className="example-result-row">
+                                <span className="example-result-label">Destination Tx Hash:</span>
+                                <span className="example-result-value mono">
                                     {status.intent.destinationTxHash}
                                 </span>
                             </div>
                         )}
                     </div>
 
-                    <details>
-                        <summary style={{ color: "#4615C8", cursor: "pointer", padding: "10px", background: "#1a1a1a", borderRadius: "8px", marginBottom: "10px" }}>
-                            View Full JSON Response
-                        </summary>
-                        <pre style={{
-                            background: "#0D0C0D",
-                            padding: "15px",
-                            borderRadius: "8px",
-                            overflowX: "auto",
-                            color: "#e0e0e0",
-                            fontSize: "0.85rem",
-                            border: "1px solid rgba(255, 255, 255, 0.1)"
-                        }}>
-                            {JSON.stringify(status, null, 2)}
-                        </pre>
+                    <details className="example-details">
+                        <summary className="example-details-summary">View Full JSON Response</summary>
+                        <pre className="example-pre">{JSON.stringify(status, null, 2)}</pre>
                     </details>
                 </div>
             )}

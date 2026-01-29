@@ -1,7 +1,8 @@
-// SDK Get Quote Example - Native Bridge
-// This component demonstrates how to use the Relay SDK to get a quote
+// SDK Get Quote + Execute Example
+// Get a quote and execute in one flow on the same page.
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { getClient } from "@relayprotocol/relay-sdk";
 import { usePrivyWalletClient } from "../../utils/wallet";
 
 export function GetQuoteSDKExample() {
@@ -9,92 +10,32 @@ export function GetQuoteSDKExample() {
     const [walletAddress, setWalletAddress] = useState("");
     const [loading, setLoading] = useState(false);
     const [quoteResponse, setQuoteResponse] = useState<any>(null);
+    const [progress, setProgress] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
-    const [sdkAvailable, setSdkAvailable] = useState(false);
-
-    const codeSnippet = `import { getClient } from '@relayprotocol/relay-sdk';
-import { useWalletClient } from 'wagmi';
-
-const { data: wallet } = useWalletClient();
-
-const quote = await getClient()?.actions.getQuote({
-  chainId: 8453,
-  toChainId: 42161,
-  currency: "0x0000000000000000000000000000000000000000",
-  toCurrency: "0x0000000000000000000000000000000000000000",
-  amount: "100000000000000",
-  wallet,
-  user: "0x...",
-  recipient: "0x...",
-  tradeType: "EXACT_INPUT"
-});`;
-
-    // Check if SDK is available and sync wallet address
-    useEffect(() => {
-        // Check if SDK is available
-        import("@relayprotocol/relay-sdk").then(() => {
-            setSdkAvailable(true);
-        }).catch(() => {
-            setSdkAvailable(false);
-        });
-
-        // Sync wallet address from Privy
-        if (isConnected && address) {
-            setWalletAddress(address);
-        }
-
-        // Try to get address from localStorage as fallback
-        if (!walletAddress) {
-            const storedQuote = localStorage.getItem("relayQuoteResponse");
-            if (storedQuote) {
-                try {
-                    const quote = JSON.parse(storedQuote);
-                    const storedAddress = quote.steps?.[0]?.items?.[0]?.data?.from || "";
-                    if (storedAddress) setWalletAddress(storedAddress);
-                } catch (e) {
-                    // Ignore
-                }
-            }
-        }
-    }, [isConnected, address, walletAddress]);
 
     const handleRun = async () => {
-        // Use connected wallet address if available, otherwise use manual input
         const addressToUse = (isConnected && address) ? address : walletAddress;
 
         if (!addressToUse || !addressToUse.startsWith("0x") || addressToUse.length !== 42) {
-            setError("Please connect a wallet at the top of the page or enter a valid wallet address (0x...)");
+            setError("Please connect a wallet or enter a valid address (0x...).");
             return;
         }
 
         setLoading(true);
         setError(null);
         setQuoteResponse(null);
+        setProgress(null);
 
         try {
-            // SDK examples MUST use the SDK - no API fallback
-            if (!sdkAvailable) {
-                setError("Relay SDK is not installed. Please install @relayprotocol/relay-sdk to use this example.");
-                setLoading(false);
-                return;
-            }
-
-            if (!isConnected) {
-                setError("Please connect your wallet to use the SDK example.");
-                setLoading(false);
-                return;
-            }
-
-            // Use SDK to get quote
-            const { getClient } = await import("../../config/relay");
-            const wallet = await getWalletClient();
             const client = getClient();
+            const wallet = await getWalletClient();
 
             if (!client || !wallet) {
-                throw new Error("SDK client or wallet not available");
+                throw new Error("Client or wallet not available. Connect your wallet.");
             }
 
-            const data = await client.actions.getQuote({
+            // Hardcoded getQuote call – then execute on the same page
+            const quote = await client.actions.getQuote({
                 chainId: 8453,
                 toChainId: 42161,
                 currency: "0x0000000000000000000000000000000000000000",
@@ -106,196 +47,142 @@ const quote = await getClient()?.actions.getQuote({
                 tradeType: "EXACT_INPUT"
             });
 
-            setQuoteResponse(data);
-            localStorage.setItem("relayQuoteResponse", JSON.stringify(data));
-            console.log("Quote received via SDK:", data);
+            setQuoteResponse(quote);
+
+            await client.actions.execute({
+                quote,
+                wallet,
+                onProgress: ({ steps, currentStep, currentStepItem, txHashes, details }) => {
+                    const currentStepIndex = steps?.findIndex(step => step.id === currentStep?.id) ?? -1;
+                    const stepNumber = currentStepIndex >= 0 ? currentStepIndex + 1 : 1;
+                    setProgress({
+                        currentStep: stepNumber,
+                        totalSteps: steps?.length || 1,
+                        stepName: currentStep?.action || "Processing",
+                        status: currentStepItem?.status || "pending",
+                        txHashes: txHashes || [],
+                        details
+                    });
+                }
+            });
         } catch (err: any) {
-            setError(err.message);
+            setError(err.message ?? "Something went wrong");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div style={{ padding: "20px" }}>
-            <h2>SDK: Get Quote</h2>
-            <p style={{ color: "#b0b0b0", marginBottom: "20px" }}>
-                Code snippet showing how to get a quote using the Relay SDK.
+        <div className="example-page">
+            <h2 className="example-title">SDK: Get Quote + Execute</h2>
+            <p className="example-description">
+                Get a quote and execute in one flow. Run the example to see both.
             </p>
 
-            <div style={{
-                background: "#1a1a1a",
-                borderRadius: "12px",
-                padding: "20px",
-                marginBottom: "20px"
-            }}>
-                <h3 style={{ color: "#e0e0e0", marginTop: 0, marginBottom: "15px" }}>Code Snippet</h3>
-                <pre style={{
-                    background: "#0D0C0D",
-                    padding: "15px",
-                    borderRadius: "8px",
-                    overflowX: "auto",
-                    color: "#e0e0e0",
-                    fontSize: "0.85rem",
-                    border: "1px solid rgba(255, 255, 255, 0.1)",
-                    margin: 0
-                }}>
-                    {codeSnippet}
-                </pre>
-            </div>
-
-            {!sdkAvailable && (
-                <div style={{
-                    padding: "15px",
-                    background: "rgba(255, 107, 107, 0.1)",
-                    border: "1px solid rgba(255, 107, 107, 0.3)",
-                    borderRadius: "8px",
-                    color: "#ff6b6b",
-                    marginBottom: "20px",
-                    fontSize: "0.9rem"
-                }}>
-                    <strong>Error:</strong> Relay SDK is not installed. This example requires <code>@relayprotocol/relay-sdk</code> to run. Please install it to use this example.
-                </div>
-            )}
-
             {isConnected && address && (
-                <div style={{
-                    padding: "12px",
-                    background: "rgba(70, 21, 200, 0.1)",
-                    border: "1px solid rgba(70, 21, 200, 0.3)",
-                    borderRadius: "8px",
-                    marginBottom: "20px",
-                    fontSize: "0.9rem",
-                    color: "#e0e0e0"
-                }}>
-                    ✓ Using connected wallet: <code style={{ color: "#4615C8" }}>{address.slice(0, 6)}...{address.slice(-4)}</code>
+                <div className="example-badge success">
+                    ✓ Using connected wallet: <code>{address.slice(0, 6)}...{address.slice(-4)}</code>
                 </div>
             )}
 
             {!isConnected && (
-                <div style={{
-                    padding: "15px",
-                    background: "rgba(255, 107, 107, 0.1)",
-                    border: "1px solid rgba(255, 107, 107, 0.3)",
-                    borderRadius: "8px",
-                    color: "#ff6b6b",
-                    marginBottom: "20px",
-                    fontSize: "0.9rem"
-                }}>
-                    Please connect your wallet at the top of the page to use this example.
+                <div className="example-badge error">
+                    Connect your wallet at the top of the page to run this example.
                 </div>
             )}
 
-            <div style={{ marginBottom: "20px" }}>
-                <label style={{ display: "block", marginBottom: "5px", color: "#b0b0b0" }}>
-                    Wallet Address {isConnected && address ? "(using connected wallet)" : "(optional override)"}:
+            <div className="example-field">
+                <label className="example-label">
+                    Wallet address {isConnected && address ? "(using connected)" : "(optional override)"}:
                 </label>
                 <input
                     type="text"
                     value={walletAddress}
                     onChange={(e) => setWalletAddress(e.target.value.trim())}
                     placeholder={address || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"}
-                    disabled={isConnected && !!address}
-                    style={{
-                        width: "100%",
-                        padding: "12px",
-                        background: "#1a1a1a",
-                        border: `1px solid ${!walletAddress || walletAddress.length !== 42
-                            ? "rgba(255, 107, 107, 0.5)"
-                            : "rgba(255, 255, 255, 0.1)"}`,
-                        borderRadius: "8px",
-                        color: "#e0e0e0",
-                        fontSize: "1rem",
-                        boxSizing: "border-box",
-                        opacity: isConnected && !!address ? 0.6 : 1,
-                        cursor: isConnected && !!address ? "not-allowed" : "text"
-                    }}
+                    disabled={!!(isConnected && address)}
+                    className={`example-input ${!(isConnected && address) && (!walletAddress || walletAddress.length !== 42) ? "invalid" : ""}`}
                 />
-                {isConnected && address && (
-                    <p style={{ color: "#a0a0a0", fontSize: "0.85rem", marginTop: "5px", marginBottom: 0 }}>
-                        Using your connected wallet. You can override by entering a different address.
-                    </p>
-                )}
             </div>
 
             <button
                 onClick={handleRun}
-                disabled={loading}
-                style={{
-                    width: "100%",
-                    padding: "15px 30px",
-                    background: "#4615C8",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "10px",
-                    fontSize: "1.1rem",
-                    fontWeight: 600,
-                    cursor: loading ? "not-allowed" : "pointer",
-                    opacity: loading ? 0.6 : 1,
-                    marginBottom: "20px"
-                }}
+                disabled={loading || !isConnected}
+                className="example-run-button"
             >
                 {loading ? "Running..." : "Run Example"}
             </button>
 
             {error && (
-                <div style={{
-                    padding: "15px",
-                    background: "#3d1f1f",
-                    border: "1px solid #5a2a2a",
-                    borderRadius: "8px",
-                    color: "#ff6b6b",
-                    marginBottom: "20px"
-                }}>
+                <div className="example-error">
                     <strong>Error:</strong> {error}
                 </div>
             )}
 
             {quoteResponse && (
-                <div>
-                    <h3 style={{ color: "#e0e0e0" }}>Result</h3>
-                    <div style={{
-                        background: "#1a1a1a",
-                        borderRadius: "12px",
-                        padding: "20px",
-                        marginBottom: "20px"
-                    }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                            <span style={{ color: "#a0a0a0" }}>Operation:</span>
-                            <span style={{ color: "#e0e0e0", fontWeight: 600 }}>
+                <div className="example-result-section">
+                    <h3 className="example-result-title">Quote</h3>
+                    <div className="example-result-box">
+                        <div className="example-result-row">
+                            <span className="example-result-label">Operation</span>
+                            <span className="example-result-value">
                                 {quoteResponse.details?.operation || "N/A"}
                             </span>
                         </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                            <span style={{ color: "#a0a0a0" }}>You Send:</span>
-                            <span style={{ color: "#e0e0e0", fontWeight: 600 }}>
-                                {quoteResponse.details?.currencyIn?.amountFormatted || quoteResponse.details?.currencyIn?.amount || "0"} ETH
+                        <div className="example-result-row">
+                            <span className="example-result-label">You Send</span>
+                            <span className="example-result-value">
+                                {quoteResponse.details?.currencyIn?.amountFormatted ?? quoteResponse.details?.currencyIn?.amount ?? "0"} ETH
                             </span>
                         </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0" }}>
-                            <span style={{ color: "#a0a0a0" }}>You Receive:</span>
-                            <span style={{ color: "#e0e0e0", fontWeight: 600 }}>
-                                {quoteResponse.details?.currencyOut?.amountFormatted || quoteResponse.details?.currencyOut?.amount || "0"} ETH
+                        <div className="example-result-row">
+                            <span className="example-result-label">You Receive</span>
+                            <span className="example-result-value">
+                                {quoteResponse.details?.currencyOut?.amountFormatted ?? quoteResponse.details?.currencyOut?.amount ?? "0"} ETH
                             </span>
                         </div>
                     </div>
-
-                    <details>
-                        <summary style={{ color: "#4615C8", cursor: "pointer", padding: "10px", background: "#1a1a1a", borderRadius: "8px", marginBottom: "10px" }}>
-                            View Full JSON Response
-                        </summary>
-                        <pre style={{
-                            background: "#0D0C0D",
-                            padding: "15px",
-                            borderRadius: "8px",
-                            overflowX: "auto",
-                            color: "#e0e0e0",
-                            fontSize: "0.85rem",
-                            border: "1px solid rgba(255, 255, 255, 0.1)"
-                        }}>
-                            {JSON.stringify(quoteResponse, null, 2)}
-                        </pre>
+                    <details className="example-details">
+                        <summary className="example-details-summary">View full JSON</summary>
+                        <pre className="example-pre">{JSON.stringify(quoteResponse, null, 2)}</pre>
                     </details>
+                </div>
+            )}
+
+            {progress && (
+                <div className="example-result-section">
+                    <h3 className="example-result-title">Execution progress</h3>
+                    <div className="example-result-box">
+                        <div className="example-result-row">
+                            <span className="example-result-label">Step</span>
+                            <span className="example-result-value">
+                                {progress.currentStep} / {progress.totalSteps}
+                            </span>
+                        </div>
+                        <div className="example-result-row">
+                            <span className="example-result-label">Status</span>
+                            <span className={`example-result-value status-${progress.status}`}>
+                                {progress.status}
+                            </span>
+                        </div>
+                        {progress.txHashes?.length > 0 && (
+                            <div className="example-result-tx-list">
+                                <span className="example-result-label">Transaction hashes</span>
+                                {progress.txHashes.map((hash: string, i: number) => (
+                                    <div key={i} className="example-result-row">
+                                        <span className="example-result-label">Tx {i + 1}</span>
+                                        <span className="example-result-value mono">{hash}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        {progress.details && (
+                            <details className="example-details">
+                                <summary className="example-details-summary">Progress details</summary>
+                                <pre className="example-pre">{JSON.stringify(progress.details, null, 2)}</pre>
+                            </details>
+                        )}
+                    </div>
                 </div>
             )}
         </div>

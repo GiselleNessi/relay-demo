@@ -4,7 +4,7 @@ import "./App.css";
 import { GetQuoteExample } from "./examples/api/get-quote";
 import { ExecuteExample } from "./examples/api/execute";
 import { MonitorExample } from "./examples/api/monitor";
-import { GetQuoteSDKExample, ExecuteProgressExample } from "./examples/sdk";
+import { GetQuoteSDKExample } from "./examples/sdk";
 
 // This is the app that runs in CodeSandbox
 // It shows all available examples organized by category
@@ -54,17 +54,10 @@ function App() {
         sdk: [
             {
                 id: "get-quote-sdk",
-                title: "Get Quote (SDK)",
-                description: "Use the SDK to get a quote for cross-chain bridging",
+                title: "Get Quote + Execute (SDK)",
+                description: "Get a quote and execute in one flow on the same page",
                 component: GetQuoteSDKExample,
                 file: "src/examples/sdk/get-quote.tsx"
-            },
-            {
-                id: "execute-progress",
-                title: "Execute with Progress",
-                description: "Execute with real-time progress updates using onProgress",
-                component: ExecuteProgressExample,
-                file: "src/examples/sdk/execute-progress.tsx"
             }
         ]
     };
@@ -82,8 +75,8 @@ function App() {
     if (!ready) {
         return (
             <div className="app-container">
-                <div className="card" style={{ maxWidth: "600px", textAlign: "center" }}>
-                    <p style={{ color: "#b0b0b0" }}>Loading...</p>
+                <div className="card card-loading">
+                    <p>Loading...</p>
                 </div>
             </div>
         );
@@ -94,23 +87,8 @@ function App() {
         const Component = selectedExample.component;
         return (
             <div className="app-container">
-                <div className="card" style={{ maxWidth: "900px" }}>
-                    <button
-                        onClick={handleBack}
-                        style={{
-                            marginBottom: "20px",
-                            padding: "10px 20px",
-                            background: "#1a1a1a",
-                            border: "1px solid rgba(255, 255, 255, 0.1)",
-                            borderRadius: "8px",
-                            color: "#e0e0e0",
-                            cursor: "pointer",
-                            fontSize: "0.9rem",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "8px"
-                        }}
-                    >
+                <div className="card card-example">
+                    <button onClick={handleBack} className="btn-back">
                         <span>←</span> Back to Examples
                     </button>
                     <Component />
@@ -128,141 +106,52 @@ function App() {
     return (
         <div className="app-container">
             <div className="card">
-                <div style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "30px",
-                    paddingBottom: "20px",
-                    borderBottom: "1px solid rgba(255, 255, 255, 0.1)"
-                }}>
+                <div className="app-header">
                     <div>
-                        <h1 style={{ margin: 0, marginBottom: "5px" }}>Relay Interactive Sandbox</h1>
-                        <p className="subtitle" style={{ margin: 0 }}>
+                        <h1>Relay Interactive Sandbox</h1>
+                        <p className="subtitle">
                             Test and learn Relay's cross-chain bridging with interactive examples
                         </p>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                    <div className="app-header-actions">
                         {authenticated && connectedAddress ? (
                             <>
-                                <div style={{
-                                    padding: "8px 16px",
-                                    background: "rgba(70, 21, 200, 0.1)",
-                                    border: "1px solid rgba(70, 21, 200, 0.3)",
-                                    borderRadius: "8px",
-                                    fontSize: "0.9rem",
-                                    color: "#e0e0e0"
-                                }}>
-                                    ✓ {displayAddress}
-                                </div>
-                                <button
-                                    onClick={logout}
-                                    style={{
-                                        padding: "8px 16px",
-                                        background: "#1a1a1a",
-                                        border: "1px solid rgba(255, 255, 255, 0.1)",
-                                        borderRadius: "8px",
-                                        color: "#e0e0e0",
-                                        cursor: "pointer",
-                                        fontSize: "0.9rem"
-                                    }}
-                                >
+                                <div className="badge-wallet">✓ {displayAddress}</div>
+                                <button onClick={logout} className="btn-secondary">
                                     Disconnect
                                 </button>
                             </>
                         ) : (
-                            <button
-                                onClick={login}
-                                style={{
-                                    padding: "8px 16px",
-                                    background: "#4615C8",
-                                    border: "none",
-                                    borderRadius: "8px",
-                                    color: "white",
-                                    cursor: "pointer",
-                                    fontSize: "0.9rem",
-                                    fontWeight: 500
-                                }}
-                            >
+                            <button onClick={login} className="btn-primary">
                                 Connect Wallet
                             </button>
                         )}
                     </div>
                 </div>
 
-                {/* Workflow Guide */}
-                <div style={{
-                    background: "linear-gradient(135deg, rgba(70, 21, 200, 0.1) 0%, rgba(70, 21, 200, 0.05) 100%)",
-                    border: "1px solid rgba(70, 21, 200, 0.3)",
-                    borderRadius: "12px",
-                    padding: "25px",
-                    marginBottom: "40px"
-                }}>
-                    <h3 style={{ color: "#e0e0e0", marginTop: 0, marginBottom: "15px", fontSize: "1.3rem" }}>
-                        How to Use
-                    </h3>
-                    <p style={{ color: "#b0b0b0", marginBottom: "20px", lineHeight: "1.6" }}>
-                        Follow these steps in order to complete a cross-chain bridge:
-                    </p>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-                            <div style={{
-                                width: "40px",
-                                height: "40px",
-                                borderRadius: "50%",
-                                background: "#4615C8",
-                                color: "white",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontWeight: "bold",
-                                flexShrink: 0
-                            }}>1</div>
-                            <div style={{ flex: 1 }}>
-                                <strong style={{ color: "#e0e0e0" }}>Get Quote</strong>
-                                <p style={{ color: "#a0a0a0", margin: "5px 0 0 0", fontSize: "0.9rem" }}>
-                                    Click the "Get Quote" card below to start. Enter your wallet address and get a quote for your bridge.
-                                </p>
+                <div className="workflow-guide">
+                    <h3>How to Use</h3>
+                    <p>Follow these steps in order to complete a cross-chain bridge:</p>
+                    <div className="workflow-steps">
+                        <div className="workflow-step">
+                            <div className="workflow-step-num">1</div>
+                            <div className="workflow-step-body">
+                                <strong>Get Quote</strong>
+                                <p>Click the "Get Quote" card below to start. Enter your wallet address and get a quote for your bridge.</p>
                             </div>
                         </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-                            <div style={{
-                                width: "40px",
-                                height: "40px",
-                                borderRadius: "50%",
-                                background: "#4615C8",
-                                color: "white",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontWeight: "bold",
-                                flexShrink: 0
-                            }}>2</div>
-                            <div style={{ flex: 1 }}>
-                                <strong style={{ color: "#e0e0e0" }}>Execute</strong>
-                                <p style={{ color: "#a0a0a0", margin: "5px 0 0 0", fontSize: "0.9rem" }}>
-                                    After getting a quote, click "Execute" to submit the transaction to your wallet.
-                                </p>
+                        <div className="workflow-step">
+                            <div className="workflow-step-num">2</div>
+                            <div className="workflow-step-body">
+                                <strong>Execute</strong>
+                                <p>After getting a quote, click "Execute" to submit the transaction to your wallet.</p>
                             </div>
                         </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-                            <div style={{
-                                width: "40px",
-                                height: "40px",
-                                borderRadius: "50%",
-                                background: "#4615C8",
-                                color: "white",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontWeight: "bold",
-                                flexShrink: 0
-                            }}>3</div>
-                            <div style={{ flex: 1 }}>
-                                <strong style={{ color: "#e0e0e0" }}>Monitor</strong>
-                                <p style={{ color: "#a0a0a0", margin: "5px 0 0 0", fontSize: "0.9rem" }}>
-                                    Use "Monitor" to track your transaction status using the requestId from execution.
-                                </p>
+                        <div className="workflow-step">
+                            <div className="workflow-step-num">3</div>
+                            <div className="workflow-step-body">
+                                <strong>Monitor</strong>
+                                <p>Use "Monitor" to track your transaction status using the requestId from execution.</p>
                             </div>
                         </div>
                     </div>
@@ -279,66 +168,23 @@ function App() {
                             {examples.api.map((example) => (
                                 <div
                                     key={example.id}
-                                    className={`example-card ${example.disabled ? "disabled" : ""}`}
+                                    className={`example-card example-card-clickable ${example.disabled ? "disabled" : ""}`}
                                     onClick={() => handleExampleClick(example)}
-                                    style={{
-                                        cursor: example.disabled ? "not-allowed" : "pointer",
-                                        position: "relative",
-                                        transition: "all 0.2s ease"
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        if (!example.disabled) {
-                                            e.currentTarget.style.transform = "translateY(-2px)";
-                                            e.currentTarget.style.boxShadow = "0 4px 12px rgba(70, 21, 200, 0.3)";
-                                        }
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        if (!example.disabled) {
-                                            e.currentTarget.style.transform = "translateY(0)";
-                                            e.currentTarget.style.boxShadow = "none";
-                                        }
-                                    }}
                                 >
                                     {example.stepNumber && (
-                                        <div style={{
-                                            position: "absolute",
-                                            top: "15px",
-                                            right: "15px",
-                                            width: "30px",
-                                            height: "30px",
-                                            borderRadius: "50%",
-                                            background: "#4615C8",
-                                            color: "white",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            fontWeight: "bold",
-                                            fontSize: "0.9rem"
-                                        }}>
+                                        <div className="example-card-step-badge">
                                             {example.stepNumber}
                                         </div>
                                     )}
                                     <h3>{example.title}</h3>
                                     <p>{example.description}</p>
                                     {example.file && (
-                                        <p style={{ fontSize: "0.85rem", color: "#888", marginTop: "10px" }}>
+                                        <p className="example-card-file">
                                             File: <code>{example.file}</code>
                                         </p>
                                     )}
                                     {!example.disabled && (
-                                        <div style={{
-                                            marginTop: "15px",
-                                            padding: "8px 16px",
-                                            background: "rgba(70, 21, 200, 0.2)",
-                                            border: "1px solid rgba(70, 21, 200, 0.4)",
-                                            borderRadius: "6px",
-                                            color: "#4615C8",
-                                            fontSize: "0.9rem",
-                                            fontWeight: 600,
-                                            textAlign: "center"
-                                        }}>
-                                            Click to Try →
-                                        </div>
+                                        <div className="example-card-cta">Click to Try →</div>
                                     )}
                                 </div>
                             ))}
@@ -355,66 +201,23 @@ function App() {
                             {examples.sdk.map((example) => (
                                 <div
                                     key={example.id}
-                                    className={`example-card ${example.disabled ? "disabled" : ""}`}
+                                    className={`example-card example-card-clickable ${example.disabled ? "disabled" : ""}`}
                                     onClick={() => handleExampleClick(example)}
-                                    style={{
-                                        cursor: example.disabled ? "not-allowed" : "pointer",
-                                        position: "relative",
-                                        transition: "all 0.2s ease"
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        if (!example.disabled) {
-                                            e.currentTarget.style.transform = "translateY(-2px)";
-                                            e.currentTarget.style.boxShadow = "0 4px 12px rgba(70, 21, 200, 0.3)";
-                                        }
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        if (!example.disabled) {
-                                            e.currentTarget.style.transform = "translateY(0)";
-                                            e.currentTarget.style.boxShadow = "none";
-                                        }
-                                    }}
                                 >
                                     {example.stepNumber && (
-                                        <div style={{
-                                            position: "absolute",
-                                            top: "15px",
-                                            right: "15px",
-                                            width: "30px",
-                                            height: "30px",
-                                            borderRadius: "50%",
-                                            background: "#4615C8",
-                                            color: "white",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            fontWeight: "bold",
-                                            fontSize: "0.9rem"
-                                        }}>
+                                        <div className="example-card-step-badge">
                                             {example.stepNumber}
                                         </div>
                                     )}
                                     <h3>{example.title}</h3>
                                     <p>{example.description}</p>
                                     {example.file && (
-                                        <p style={{ fontSize: "0.85rem", color: "#888", marginTop: "10px" }}>
+                                        <p className="example-card-file">
                                             File: <code>{example.file}</code>
                                         </p>
                                     )}
                                     {!example.disabled && (
-                                        <div style={{
-                                            marginTop: "15px",
-                                            padding: "8px 16px",
-                                            background: "rgba(70, 21, 200, 0.2)",
-                                            border: "1px solid rgba(70, 21, 200, 0.4)",
-                                            borderRadius: "6px",
-                                            color: "#4615C8",
-                                            fontSize: "0.9rem",
-                                            fontWeight: 600,
-                                            textAlign: "center"
-                                        }}>
-                                            Click to Try →
-                                        </div>
+                                        <div className="example-card-cta">Click to Try →</div>
                                     )}
                                 </div>
                             ))}

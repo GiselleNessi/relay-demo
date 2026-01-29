@@ -121,19 +121,14 @@ export function ExecuteExample({ quoteResponse: propQuoteResponse }: ExecuteProp
     };
 
     return (
-        <div style={{ padding: "20px" }}>
-            <h2>Step 2: Execute</h2>
-            <p>The quote endpoint returns a steps array. You need to iterate through these steps and prompt the user to sign or submit them.</p>
+        <div className="example-page">
+            <h2 className="example-title">Step 2: Execute</h2>
+            <p className="example-description">
+                The quote endpoint returns a steps array. You need to iterate through these steps and prompt the user to sign or submit them.
+            </p>
 
             {!quoteResponse && (
-                <div style={{
-                    padding: "15px",
-                    background: "#2a2a1a",
-                    border: "1px solid #5a5a2a",
-                    borderRadius: "8px",
-                    color: "#ffd700",
-                    marginBottom: "20px"
-                }}>
+                <div className="example-note">
                     <strong>Note:</strong> Please complete Step 1 (Get Quote) first to get a quote response.
                 </div>
             )}
@@ -141,60 +136,33 @@ export function ExecuteExample({ quoteResponse: propQuoteResponse }: ExecuteProp
             <button
                 onClick={handleExecute}
                 disabled={loading || !quoteResponse}
-                style={{
-                    width: "100%",
-                    padding: "15px 30px",
-                    background: quoteResponse ? "#4615C8" : "#666",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "10px",
-                    fontSize: "1.1rem",
-                    fontWeight: 600,
-                    cursor: loading || !quoteResponse ? "not-allowed" : "pointer",
-                    opacity: loading || !quoteResponse ? 0.6 : 1
-                }}
+                className={`example-run-button ${!quoteResponse ? "example-run-button-disabled" : ""}`}
             >
                 {loading ? "Executing..." : "Execute Transaction"}
             </button>
 
             {error && (
-                <div style={{
-                    marginTop: "20px",
-                    padding: "15px",
-                    background: "#3d1f1f",
-                    border: "1px solid #5a2a2a",
-                    borderRadius: "8px",
-                    color: "#ff6b6b"
-                }}>
+                <div className="example-error">
                     <strong>Error:</strong> {error}
                 </div>
             )}
 
             {txHash && (
-                <div style={{ marginTop: "30px" }}>
-                    <h3>Transaction Submitted</h3>
-                    <div style={{
-                        background: "#1a1a1a",
-                        borderRadius: "12px",
-                        padding: "20px",
-                        marginBottom: "20px"
-                    }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                            <span style={{ color: "#a0a0a0" }}>Transaction Hash:</span>
-                            <span style={{ color: "#e0e0e0", fontFamily: "monospace", fontSize: "0.85rem", wordBreak: "break-all" }}>
-                                {txHash}
-                            </span>
+                <div className="example-result-section">
+                    <h3 className="example-result-title">Transaction Submitted</h3>
+                    <div className="example-result-box">
+                        <div className="example-result-row">
+                            <span className="example-result-label">Transaction Hash:</span>
+                            <span className="example-result-value mono">{txHash}</span>
                         </div>
                         {requestId && (
-                            <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0" }}>
-                                <span style={{ color: "#a0a0a0" }}>Request ID:</span>
-                                <span style={{ color: "#e0e0e0", fontFamily: "monospace", fontSize: "0.85rem", wordBreak: "break-all" }}>
-                                    {requestId}
-                                </span>
+                            <div className="example-result-row">
+                                <span className="example-result-label">Request ID:</span>
+                                <span className="example-result-value mono">{requestId}</span>
                             </div>
                         )}
                     </div>
-                    <p style={{ color: "#a0a0a0", fontSize: "0.9rem" }}>
+                    <p className="example-note-text">
                         Save the requestId above to monitor the transaction status in Step 4.
                     </p>
                 </div>
