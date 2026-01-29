@@ -42,6 +42,17 @@ cp .env.example .env
 npm run dev
 ```
 
+### Troubleshooting
+
+**"Frame ancestor is not allowed" / Privy iframe failed to load**
+
+When running on CodeSandbox or other sandbox domains, add your preview URL to Privy's allowed domains:
+
+1. Go to [Privy Dashboard](https://dashboard.privy.io/) → your app → **Settings** → **Allowed URLs**
+2. Add your domain (e.g. `https://*.csb.app`, `https://*.codesandbox.io` for CodeSandbox previews)
+
+See [Privy's allowed domains docs](https://docs.privy.io/recipes/dashboard/allowed-domains) for details.
+
 ## Learn More
 
 - [What is Relay?](https://docs.relay.link/what-is-relay)

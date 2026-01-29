@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { usePrivy, useWallets } from '@privy-io/react-auth';
 import "./App.css";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { GetQuoteExample } from "./examples/api/get-quote";
 import { ExecuteExample } from "./examples/api/execute";
 import { MonitorExample } from "./examples/api/monitor";
@@ -91,7 +92,9 @@ function App() {
                     <button onClick={handleBack} className="btn-back">
                         <span>←</span> Back to Examples
                     </button>
-                    <Component />
+                    <ErrorBoundary>
+                        <Component />
+                    </ErrorBoundary>
                 </div>
             </div>
         );

@@ -5,6 +5,27 @@ import { useState } from "react";
 import { getClient } from "@relayprotocol/relay-sdk";
 import { usePrivyWalletClient } from "../../utils/wallet";
 
+// Safe display: ensure we never render objects (React throws)
+function safeStr(val: unknown): string {
+    if (val == null) return "";
+    if (typeof val === "string") return val;
+    if (typeof val === "number" || typeof val === "boolean") return String(val);
+    return String(val);
+}
+
+function formatAddress(addr: unknown): string {
+    const s = safeStr(addr);
+    if (s.length >= 10) return `${s.slice(0, 6)}...${s.slice(-4)}`;
+    return s || "—";
+}
+
+// Map status to known CSS class (avoids invalid class names)
+function statusClass(status: unknown): string {
+    const s = safeStr(status).toLowerCase().replace(/\s+/g, "-");
+    const known = ["completed", "pending", "success", "failed", "waiting", "refunded", "validated"];
+    return known.includes(s) ? `status-${s}` : "status-default";
+}
+
 export function GetQuoteSDKExample() {
     const { getWalletClient, address, isConnected } = usePrivyWalletClient();
     const [walletAddress, setWalletAddress] = useState("");
@@ -14,7 +35,8 @@ export function GetQuoteSDKExample() {
     const [error, setError] = useState<string | null>(null);
 
     const handleRun = async () => {
-        const addressToUse = (isConnected && address) ? address : walletAddress;
+        const rawAddress = (isConnected && address) ? address : walletAddress;
+        const addressToUse = typeof rawAddress === "string" ? rawAddress : safeStr(rawAddress);
 
         if (!addressToUse || !addressToUse.startsWith("0x") || addressToUse.length !== 42) {
             setError("Please connect a wallet or enter a valid address (0x...).");
@@ -81,7 +103,7 @@ export function GetQuoteSDKExample() {
 
             {isConnected && address && (
                 <div className="example-badge success">
-                    ✓ Using connected wallet: <code>{address.slice(0, 6)}...{address.slice(-4)}</code>
+                    ✓ Using connected wallet: <code>{formatAddress(address)}</code>
                 </div>
             )}
 
@@ -126,25 +148,33 @@ export function GetQuoteSDKExample() {
                         <div className="example-result-row">
                             <span className="example-result-label">Operation</span>
                             <span className="example-result-value">
-                                {quoteResponse.details?.operation || "N/A"}
+                                {safeStr(quoteResponse.details?.operation) || "N/A"}
                             </span>
                         </div>
                         <div className="example-result-row">
                             <span className="example-result-label">You Send</span>
                             <span className="example-result-value">
-                                {quoteResponse.details?.currencyIn?.amountFormatted ?? quoteResponse.details?.currencyIn?.amount ?? "0"} ETH
+                                {safeStr(quoteResponse.details?.currencyIn?.amountFormatted ?? quoteResponse.details?.currencyIn?.amount ?? "0")} ETH
                             </span>
                         </div>
                         <div className="example-result-row">
                             <span className="example-result-label">You Receive</span>
                             <span className="example-result-value">
-                                {quoteResponse.details?.currencyOut?.amountFormatted ?? quoteResponse.details?.currencyOut?.amount ?? "0"} ETH
+                                {safeStr(quoteResponse.details?.currencyOut?.amountFormatted ?? quoteResponse.details?.currencyOut?.amount ?? "0")} ETH
                             </span>
                         </div>
                     </div>
                     <details className="example-details">
                         <summary className="example-details-summary">View full JSON</summary>
-                        <pre className="example-pre">{JSON.stringify(quoteResponse, null, 2)}</pre>
+                        <pre className="example-pre">
+                            {(() => {
+                                try {
+                                    return JSON.stringify(quoteResponse, null, 2);
+                                } catch {
+                                    return String(quoteResponse);
+                                }
+                            })()}
+                        </pre>
                     </details>
                 </div>
             )}
@@ -156,22 +186,22 @@ export function GetQuoteSDKExample() {
                         <div className="example-result-row">
                             <span className="example-result-label">Step</span>
                             <span className="example-result-value">
-                                {progress.currentStep} / {progress.totalSteps}
+                                {safeStr(progress.currentStep)} / {safeStr(progress.totalSteps)}
                             </span>
                         </div>
                         <div className="example-result-row">
                             <span className="example-result-label">Status</span>
-                            <span className={`example-result-value status-${progress.status}`}>
-                                {progress.status}
+                            <span className={`example-result-value ${statusClass(progress.status)}`}>
+                                {safeStr(progress.status)}
                             </span>
                         </div>
                         {progress.txHashes?.length > 0 && (
                             <div className="example-result-tx-list">
                                 <span className="example-result-label">Transaction hashes</span>
-                                {progress.txHashes.map((hash: string, i: number) => (
-                                    <div key={i} className="example-result-row">
+                                {progress.txHashes.map((hash: unknown, i: number) => (
+                                    <div key={`tx-${i}-${safeStr(hash).slice(0, 10)}`} className="example-result-row">
                                         <span className="example-result-label">Tx {i + 1}</span>
-                                        <span className="example-result-value mono">{hash}</span>
+                                        <span className="example-result-value mono">{safeStr(hash)}</span>
                                     </div>
                                 ))}
                             </div>
@@ -179,7 +209,15 @@ export function GetQuoteSDKExample() {
                         {progress.details && (
                             <details className="example-details">
                                 <summary className="example-details-summary">Progress details</summary>
-                                <pre className="example-pre">{JSON.stringify(progress.details, null, 2)}</pre>
+                                <pre className="example-pre">
+                                    {(() => {
+                                        try {
+                                            return JSON.stringify(progress.details, null, 2);
+                                        } catch {
+                                            return String(progress.details);
+                                        }
+                                    })()}
+                                </pre>
                             </details>
                         )}
                     </div>

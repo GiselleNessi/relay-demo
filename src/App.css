@@ -592,7 +592,8 @@ h1 {
   text-transform: uppercase;
 }
 
-.example-result-value.status-default {
+.example-result-value.status-default,
+.example-result-value.status-validated {
   color: #a0a0a0;
   font-weight: 600;
   text-transform: uppercase;

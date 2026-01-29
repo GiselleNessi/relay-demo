@@ -11,17 +11,10 @@ if (!rootElement) {
   throw new Error('Root element not found')
 }
 
+// Use VITE_PRIVY_APP_ID from env, or default for demo. Set in .env or CodeSandbox env vars.
 const privyAppId = import.meta.env.VITE_PRIVY_APP_ID || '';
-
-// Use default App ID if not set (for demo purposes)
-// Users can override with their own in .env or CodeSandbox env vars
 const DEFAULT_APP_ID = 'cmksmuxeh00hml40e5tlgyi22';
 const appIdToUse = privyAppId || DEFAULT_APP_ID;
-
-if (!privyAppId) {
-  console.warn('⚠️ VITE_PRIVY_APP_ID is not set. Using default App ID for demo.');
-  console.warn('📝 To use your own: Set VITE_PRIVY_APP_ID in .env or CodeSandbox environment variables');
-}
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
