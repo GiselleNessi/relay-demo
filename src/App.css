@@ -24,14 +24,6 @@ h1 {
   margin: 0;
 }
 
-.logo-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-  gap: 15px;
-}
-
 .subtitle {
   color: #a0a0a0;
   text-align: center;
@@ -212,67 +204,6 @@ h1 {
   font-weight: 500;
 }
 
-/* Workflow guide */
-.workflow-guide {
-  background: linear-gradient(135deg, rgba(70, 21, 200, 0.1) 0%, rgba(70, 21, 200, 0.05) 100%);
-  border: 1px solid rgba(70, 21, 200, 0.3);
-  border-radius: 12px;
-  padding: 25px;
-  margin-bottom: 40px;
-}
-
-.workflow-guide h3 {
-  color: #e0e0e0;
-  margin-top: 0;
-  margin-bottom: 15px;
-  font-size: 1.3rem;
-}
-
-.workflow-guide > p {
-  color: #b0b0b0;
-  margin-bottom: 20px;
-  line-height: 1.6;
-}
-
-.workflow-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.workflow-step {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.workflow-step-num {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #4615C8;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  flex-shrink: 0;
-}
-
-.workflow-step-body {
-  flex: 1;
-}
-
-.workflow-step-body strong {
-  color: #e0e0e0;
-}
-
-.workflow-step-body p {
-  color: #a0a0a0;
-  margin: 5px 0 0 0;
-  font-size: 0.9rem;
-}
-
 /* Example cards hover */
 .example-card-clickable {
   cursor: pointer;
@@ -283,22 +214,6 @@ h1 {
 .example-card-clickable:hover:not(.disabled) {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(70, 21, 200, 0.3);
-}
-
-.example-card-step-badge {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: #4615C8;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 0.9rem;
 }
 
 .example-card-file {
@@ -333,29 +248,6 @@ h1 {
 .example-description {
   color: #b0b0b0;
   margin-bottom: 20px;
-}
-
-.example-badge {
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 0.9rem;
-}
-
-.example-badge.success {
-  background: rgba(70, 21, 200, 0.1);
-  border: 1px solid rgba(70, 21, 200, 0.3);
-  color: #e0e0e0;
-}
-
-.example-badge.success code {
-  color: #4615C8;
-}
-
-.example-badge.error {
-  background: rgba(255, 107, 107, 0.1);
-  border: 1px solid rgba(255, 107, 107, 0.3);
-  color: #ff6b6b;
 }
 
 .example-field {
@@ -502,43 +394,6 @@ h1 {
 }
 
 /* API example extras */
-.example-helper {
-  margin-top: 5px;
-  display: block;
-  font-size: 0.9rem;
-}
-
-.example-helper-error {
-  color: #ff6b6b;
-}
-
-.example-helper-success {
-  color: #4615C8;
-}
-
-.example-label-inline {
-  margin-left: 10px;
-  color: #4615C8;
-  font-size: 0.85rem;
-  font-weight: normal;
-}
-
-.example-grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-.example-note {
-  padding: 15px;
-  background: #2a2a1a;
-  border: 1px solid #5a5a2a;
-  border-radius: 8px;
-  color: #ffd700;
-  margin-bottom: 20px;
-}
-
 .example-button-group {
   display: flex;
   gap: 10px;

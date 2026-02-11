@@ -150,11 +150,6 @@ function App() {
                                     className={`example-card example-card-clickable ${example.disabled ? "disabled" : ""}`}
                                     onClick={() => handleExampleClick(example)}
                                 >
-                                    {example.stepNumber && (
-                                        <div className="example-card-step-badge">
-                                            {example.stepNumber}
-                                        </div>
-                                    )}
                                     <h3>{example.title}</h3>
                                     <p>{example.description}</p>
                                     {example.file && (
@@ -183,11 +178,6 @@ function App() {
                                     className={`example-card example-card-clickable ${example.disabled ? "disabled" : ""}`}
                                     onClick={() => handleExampleClick(example)}
                                 >
-                                    {example.stepNumber && (
-                                        <div className="example-card-step-badge">
-                                            {example.stepNumber}
-                                        </div>
-                                    )}
                                     <h3>{example.title}</h3>
                                     <p>{example.description}</p>
                                     {example.file && (
