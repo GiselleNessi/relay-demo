@@ -5,7 +5,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { GetQuoteExample } from "./examples/api/get-quote";
 import { ExecuteExample } from "./examples/api/execute";
 import { MonitorExample } from "./examples/api/monitor";
-import { GetQuoteSDKExample } from "./examples/sdk";
+import { GetQuoteSDKExample, OverridePriceImpactExample } from "./examples/sdk";
 
 // This is the app that runs in CodeSandbox
 // It shows all available examples organized by category
@@ -59,6 +59,13 @@ function App() {
                 description: "Get a quote and execute in one flow on the same page",
                 component: GetQuoteSDKExample,
                 file: "src/examples/sdk/get-quote.tsx"
+            },
+            {
+                id: "override-price-impact",
+                title: "Override price impact (simple)",
+                description: "Get quote with overridePriceImpact to bypass \"Swap impact is too high\" for long-tail assets",
+                component: OverridePriceImpactExample,
+                file: "src/examples/sdk/override-price-impact.tsx"
             }
         ]
     };
@@ -129,34 +136,6 @@ function App() {
                                 Connect Wallet
                             </button>
                         )}
-                    </div>
-                </div>
-
-                <div className="workflow-guide">
-                    <h3>How to Use</h3>
-                    <p>Follow these steps in order to complete a cross-chain bridge:</p>
-                    <div className="workflow-steps">
-                        <div className="workflow-step">
-                            <div className="workflow-step-num">1</div>
-                            <div className="workflow-step-body">
-                                <strong>Get Quote</strong>
-                                <p>Click the "Get Quote" card below to start. Enter your wallet address and get a quote for your bridge.</p>
-                            </div>
-                        </div>
-                        <div className="workflow-step">
-                            <div className="workflow-step-num">2</div>
-                            <div className="workflow-step-body">
-                                <strong>Execute</strong>
-                                <p>After getting a quote, click "Execute" to submit the transaction to your wallet.</p>
-                            </div>
-                        </div>
-                        <div className="workflow-step">
-                            <div className="workflow-step-num">3</div>
-                            <div className="workflow-step-body">
-                                <strong>Monitor</strong>
-                                <p>Use "Monitor" to track your transaction status using the requestId from execution.</p>
-                            </div>
-                        </div>
                     </div>
                 </div>
 

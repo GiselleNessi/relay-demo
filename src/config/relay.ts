@@ -6,12 +6,13 @@ import {
     convertViemChainToRelayChain,
     MAINNET_RELAY_API,
 } from '@relayprotocol/relay-sdk';
-import { base, arbitrum } from 'viem/chains';
+import { base, arbitrum, mainnet } from 'viem/chains';
 
 createClient({
     baseApiUrl: MAINNET_RELAY_API,
     source: "relay-api-demo",
     chains: [
+        convertViemChainToRelayChain(mainnet),
         convertViemChainToRelayChain(base),
         convertViemChainToRelayChain(arbitrum)
     ],

@@ -598,3 +598,31 @@ h1 {
   font-weight: 600;
   text-transform: uppercase;
 }
+
+/* Simple example tables and lists */
+.simple-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.simple-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e0e0e0;
+}
+
+.simple-table td:first-child {
+  color: #a0a0a0;
+  width: 140px;
+}
+
+.simple-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #b0b0b0;
+  line-height: 1.6;
+}
+
+.simple-list li {
+  margin-bottom: 0.25rem;
+}
