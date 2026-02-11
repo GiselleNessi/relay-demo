@@ -120,17 +120,32 @@ export function ExecuteExample({ quoteResponse: propQuoteResponse }: ExecuteProp
         }
     };
 
+    const codeSnippet = `// quote from Get Quote example (or localStorage)
+for (const step of quote.steps) {
+  if (step.kind === "transaction") {
+    const txData = step.items[0].data;
+    const hash = await provider.request({
+      method: "eth_sendTransaction",
+      params: [{ from: userAddress, to: txData.to, data: txData.data, value: txData.value, ... }],
+    });
+  }
+}`;
+
     return (
         <div className="example-page">
-            <h2 className="example-title">Step 2: Execute</h2>
+            <h2 className="example-title">API: Execute</h2>
             <p className="example-description">
-                The quote endpoint returns a steps array. You need to iterate through these steps and prompt the user to sign or submit them.
+                Iterate the quote <code>steps</code> and send transactions via your wallet. Run the code below (get a quote first).
             </p>
 
+            <div className="example-snippet-box">
+                <pre className="example-pre">{codeSnippet}</pre>
+            </div>
+
             {!quoteResponse && (
-                <div className="example-note">
-                    <strong>Note:</strong> Please complete Step 1 (Get Quote) first to get a quote response.
-                </div>
+                <p className="example-description" style={{ marginBottom: "1rem", color: "#fbbf24" }}>
+                    Get a quote first (API: Get Quote), then run Execute.
+                </p>
             )}
 
             <button

@@ -599,6 +599,16 @@ h1 {
   text-transform: uppercase;
 }
 
+/* Code snippet block (code + run + results pattern) */
+.example-snippet-box {
+  margin-bottom: 1.25rem;
+}
+
+.example-snippet-box .example-pre {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
 /* Simple example tables and lists */
 .simple-table {
   border-collapse: collapse;

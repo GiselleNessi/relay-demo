@@ -100,20 +100,29 @@ export function MonitorExample({ requestId: propRequestId }: MonitorProps = {}) 
 
     const statusValue = status?.status || status?.intent?.status || "N/A";
 
+    const codeSnippet = `const res = await fetch(
+  \`https://api.relay.link/intents/status/v3?requestId=\${requestId}\`
+);
+const data = await res.json();`;
+
     return (
         <div className="example-page">
-            <h2 className="example-title">Step 3: Monitor</h2>
+            <h2 className="example-title">API: Monitor</h2>
             <p className="example-description">
-                Use the status endpoint with the requestId to track status and confirm success. Poll this endpoint once per second. Use the requestId from Step 2 (Execute).
+                GET <code>/intents/status/v3?requestId=...</code> to track status. Use requestId from Execute. Run the code below.
             </p>
 
+            <div className="example-snippet-box">
+                <pre className="example-pre">{codeSnippet}</pre>
+            </div>
+
             <div className="example-field">
-                <label className="example-label">Request ID:</label>
+                <label className="example-label">Request ID</label>
                 <input
                     type="text"
                     value={requestId}
                     onChange={(e) => setRequestId(e.target.value.trim())}
-                    placeholder="0x20538510fd9eab7a90c3e54418f8f477bfef24d83c11955a8ca835e6154b59d3"
+                    placeholder="0x..."
                     className="example-input"
                 />
             </div>

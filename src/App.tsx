@@ -30,24 +30,21 @@ function App() {
             {
                 id: "get-quote",
                 title: "Get Quote",
-                description: "Get a quote for cross-chain bridging. This is the first step - click to start!",
-                stepNumber: 1,
+                description: "POST /quote/v2 — code + run + result",
                 component: GetQuoteExample,
                 file: "src/examples/api/get-quote.tsx"
             },
             {
                 id: "execute",
                 title: "Execute",
-                description: "Execute the transaction from your quote. Complete Step 1 first.",
-                stepNumber: 2,
+                description: "Execute quote steps with wallet — code + run + result",
                 component: ExecuteExample,
                 file: "src/examples/api/execute.tsx"
             },
             {
                 id: "monitor",
                 title: "Monitor",
-                description: "Monitor your transaction status. Use after executing Step 2.",
-                stepNumber: 3,
+                description: "GET status by requestId — code + run + result",
                 component: MonitorExample,
                 file: "src/examples/api/monitor.tsx"
             }
@@ -56,14 +53,14 @@ function App() {
             {
                 id: "get-quote-sdk",
                 title: "Get Quote + Execute (SDK)",
-                description: "Get a quote and execute in one flow on the same page",
+                description: "getQuote + execute in one flow — code + run + result",
                 component: GetQuoteSDKExample,
                 file: "src/examples/sdk/get-quote.tsx"
             },
             {
                 id: "override-price-impact",
-                title: "Override price impact (simple)",
-                description: "Get quote with overridePriceImpact to bypass \"Swap impact is too high\" for long-tail assets",
+                title: "Override price impact",
+                description: "getQuote with overridePriceImpact: true — code + run + result",
                 component: OverridePriceImpactExample,
                 file: "src/examples/sdk/override-price-impact.tsx"
             }
@@ -144,7 +141,7 @@ function App() {
                     <div className="example-category">
                         <h2 className="category-title">API Examples</h2>
                         <p className="category-description">
-                            Follow the Relay API Quickstart guide step by step. Click on any step to try it!
+                            Relay API: code snippet, run, result.
                         </p>
                         <div className="examples-list">
                             {examples.api.map((example) => (
@@ -177,7 +174,7 @@ function App() {
                     <div className="example-category">
                         <h2 className="category-title">SDK Examples</h2>
                         <p className="category-description">
-                            Examples using Relay SDK and React hooks
+                            Relay SDK: code snippet, run, result.
                         </p>
                         <div className="examples-list">
                             {examples.sdk.map((example) => (

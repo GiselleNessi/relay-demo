@@ -46,24 +46,27 @@ export function OverridePriceImpactExample() {
         }
     };
 
+    const codeSnippet = `const result = await client.actions.getQuote({
+  chainId: 1,
+  toChainId: 8453,
+  amount: "1000000",
+  currency: "0xA0b8...eB48",  // USDC Ethereum
+  toCurrency: "0x8335...2913", // USDC Base
+  user: "0x...",
+  recipient: "0x...",
+  tradeType: "EXACT_INPUT",
+  options: { overridePriceImpact: true },
+});`;
+
     return (
         <div className="example-page">
-            <h2 className="example-title">Override price impact (simple)</h2>
+            <h2 className="example-title">Override price impact</h2>
             <p className="example-description">
-                Get a quote with <code>options.overridePriceImpact: true</code> to bypass &quot;Swap impact is too high&quot; when users still want to trade long-tail assets.
+                Bypass &quot;Swap impact is too high&quot; with <code>options.overridePriceImpact: true</code>. Run the code below.
             </p>
 
-            <div className="example-result-box" style={{ marginBottom: "1.5rem" }}>
-                <h3 className="example-result-title" style={{ marginTop: 0 }}>Quote parameters</h3>
-                <ul className="simple-list">
-                    <li>From: Ethereum (chainId: 1)</li>
-                    <li>To: Base (chainId: 8453)</li>
-                    <li>Amount: 1,000,000 (1 USDC)</li>
-                    <li>Trade type: EXACT_INPUT</li>
-                    <li>Currency: USDC on Ethereum</li>
-                    <li>To currency: USDC on Base</li>
-                    <li><strong>options.overridePriceImpact: true</strong></li>
-                </ul>
+            <div className="example-snippet-box">
+                <pre className="example-pre">{codeSnippet}</pre>
             </div>
 
             <button

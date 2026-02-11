@@ -28,18 +28,15 @@ function statusClass(status: unknown): string {
 
 export function GetQuoteSDKExample() {
     const { getWalletClient, address, isConnected } = usePrivyWalletClient();
-    const [walletAddress, setWalletAddress] = useState("");
     const [loading, setLoading] = useState(false);
     const [quoteResponse, setQuoteResponse] = useState<any>(null);
     const [progress, setProgress] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
 
     const handleRun = async () => {
-        const rawAddress = (isConnected && address) ? address : walletAddress;
-        const addressToUse = typeof rawAddress === "string" ? rawAddress : safeStr(rawAddress);
-
-        if (!addressToUse || !addressToUse.startsWith("0x") || addressToUse.length !== 42) {
-            setError("Please connect a wallet or enter a valid address (0x...).");
+        const addressToUse = typeof address === "string" ? address : safeStr(address);
+        if (!isConnected || !addressToUse || !addressToUse.startsWith("0x") || addressToUse.length !== 42) {
+            setError("Connect your wallet at the top of the page to run this example.");
             return;
         }
 
@@ -94,38 +91,34 @@ export function GetQuoteSDKExample() {
         }
     };
 
+    const codeSnippet = `const quote = await getClient().actions.getQuote({
+  chainId: 8453, toChainId: 42161,
+  currency: "0x0...", toCurrency: "0x0...",
+  amount: "100000000000000", wallet, user, recipient,
+  tradeType: "EXACT_INPUT",
+});
+await getClient().actions.execute({ quote, wallet, onProgress });`;
+
     return (
         <div className="example-page">
             <h2 className="example-title">SDK: Get Quote + Execute</h2>
             <p className="example-description">
-                Get a quote and execute in one flow. Run the example to see both.
+                Get a quote then execute in one flow. Uses your connected wallet. Run the code below.
             </p>
 
-            {isConnected && address && (
-                <div className="example-badge success">
-                    ✓ Using connected wallet: <code>{formatAddress(address)}</code>
-                </div>
-            )}
-
-            {!isConnected && (
-                <div className="example-badge error">
-                    Connect your wallet at the top of the page to run this example.
-                </div>
-            )}
-
-            <div className="example-field">
-                <label className="example-label">
-                    Wallet address {isConnected && address ? "(using connected)" : "(optional override)"}:
-                </label>
-                <input
-                    type="text"
-                    value={walletAddress}
-                    onChange={(e) => setWalletAddress(e.target.value.trim())}
-                    placeholder={address || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"}
-                    disabled={!!(isConnected && address)}
-                    className={`example-input ${!(isConnected && address) && (!walletAddress || walletAddress.length !== 42) ? "invalid" : ""}`}
-                />
+            <div className="example-snippet-box">
+                <pre className="example-pre">{codeSnippet}</pre>
             </div>
+
+            {isConnected && address ? (
+                <p className="example-description" style={{ marginBottom: "1rem" }}>
+                    Using connected wallet: <code>{formatAddress(address)}</code>
+                </p>
+            ) : (
+                <p className="example-description" style={{ marginBottom: "1rem", color: "#fbbf24" }}>
+                    Connect your wallet at the top to run.
+                </p>
+            )}
 
             <button
                 onClick={handleRun}
